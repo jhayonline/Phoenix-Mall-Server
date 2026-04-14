@@ -91,3 +91,9 @@ auth:
     secret: gj6rR9N4ZoK4pqHSM665
     # Token expiration time in seconds
     expiration: 604800 # 7 days
+
+# Storage Configuration
+storage:
+   driver: disk
+   disk:
+     path: storage/uploads

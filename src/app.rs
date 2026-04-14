@@ -20,6 +20,7 @@ use crate::{
     tasks,
     workers::downloader::DownloadWorker,
 };
+use tower_http::services::ServeDir;
 
 pub struct App;
 #[async_trait]
@@ -52,6 +53,7 @@ impl Hooks for App {
 
     fn routes(_ctx: &AppContext) -> AppRoutes {
         AppRoutes::with_default_routes() // controller routes below
+            .add_route(controllers::images::routes())
             .add_route(controllers::favorites::routes())
             .add_route(controllers::profile::routes())
             .add_route(controllers::product::routes())
@@ -61,6 +63,11 @@ impl Hooks for App {
     async fn connect_workers(ctx: &AppContext, queue: &Queue) -> Result<()> {
         queue.register(DownloadWorker::build(ctx)).await?;
         Ok(())
+    }
+
+    async fn after_routes(router: axum::Router, _ctx: &AppContext) -> Result<axum::Router> {
+        let router = router.nest_service("/uploads", ServeDir::new("storage/uploads"));
+        Ok(router)
     }
 
     #[allow(unused_variables)]
@@ -83,3 +90,4 @@ impl Hooks for App {
         Ok(())
     }
 }
+
