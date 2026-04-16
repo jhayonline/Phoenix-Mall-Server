@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use chrono::{offset::Local, Duration};
 use loco_rs::{auth::jwt, hash, prelude::*};
 use serde::{Deserialize, Serialize};
-use serde_json::Map;
+use serde_json::{json, Map};
 use uuid::Uuid;
 
 pub use super::_entities::users::{self, ActiveModel, Entity, Model};
@@ -272,8 +272,11 @@ impl Model {
     ///
     /// when could not convert user claims to jwt token
     pub fn generate_jwt(&self, secret: &str, expiration: u64) -> ModelResult<String> {
+        let mut claims = Map::new();
+        claims.insert("role".to_string(), json!(self.role));
+
         jwt::JWT::new(secret)
-            .generate_token(expiration, self.pid.to_string(), Map::new())
+            .generate_token(expiration, self.pid.to_string(), claims)
             .map_err(ModelError::from)
     }
 }
