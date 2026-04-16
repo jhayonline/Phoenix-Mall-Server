@@ -2,6 +2,7 @@
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
 use crate::models::_entities::products::Column;
+use crate::models::_entities::{favorites, products};
 use crate::{
     models::{_entities::users, products::Entity as Products, users::UpdateProfileParams},
     views::profile::{ProfileResponse, UserStatsResponse},
@@ -86,7 +87,6 @@ pub async fn my_stats(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<
         .count(&ctx.db)
         .await?;
 
-    // Fix: Use i64 instead of i32 for sum
     let total_views: i64 = Products::find()
         .filter(Column::SellerId.eq(user.id))
         .select_only()
@@ -101,8 +101,37 @@ pub async fn my_stats(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<
         active_listings,
         sold_listings,
         total_favorites: 0,
-        total_views: total_views,
+        total_views,
     })
+}
+
+// Get seller's products with stats
+#[debug_handler]
+pub async fn seller_products(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
+    let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
+
+    let products_list = products::Entity::find()
+        .filter(products::Column::SellerId.eq(user.id))
+        .order_by_desc(products::Column::CreatedAt)
+        .all(&ctx.db)
+        .await?;
+
+    // Get stats for each product
+    let mut products_with_stats = Vec::new();
+    for product in products_list {
+        // Get favorite count for this product
+        let favorite_count = favorites::Entity::find()
+            .filter(favorites::Column::ProductId.eq(product.id))
+            .count(&ctx.db)
+            .await?;
+
+        products_with_stats.push(serde_json::json!({
+            "product": product,
+            "favorite_count": favorite_count,
+        }));
+    }
+
+    format::json(products_with_stats)
 }
 
 pub fn routes() -> Routes {
@@ -112,4 +141,5 @@ pub fn routes() -> Routes {
         .add("/me", put(update_profile))
         .add("/listings", get(my_listings))
         .add("/stats", get(my_stats))
+        .add("/seller/products", get(seller_products))
 }
