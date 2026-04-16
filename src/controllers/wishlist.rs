@@ -82,7 +82,7 @@ pub async fn add_to_wishlist(
     }
 
     // Add to wishlist (no id field, composite key is user_id + product_id)
-    let wishlist_item = favorites::ActiveModel {
+    let _wishlist_item = favorites::ActiveModel {
         user_id: ActiveValue::set(user.id),
         product_id: ActiveValue::set(product.id),
         created_at: ActiveValue::set(Some(chrono::Utc::now().into())),
