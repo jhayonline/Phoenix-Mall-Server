@@ -155,7 +155,14 @@ async fn login(State(ctx): State<AppContext>, Json(params): Json<LoginParams>) -
         .generate_jwt(&jwt_secret.secret, jwt_secret.expiration)
         .or_else(|_| unauthorized("unauthorized!"))?;
 
-    format::json(LoginResponse::new(&user, &token))
+    format::json(serde_json::json!({
+        "token": token,
+        "pid": user.pid,
+        "name": user.name,
+        "is_verified": user.email_verified_at.is_some(),
+        "role": user.role.as_deref().unwrap_or("user"),
+        "email": user.email,
+    }))
 }
 
 #[debug_handler]
