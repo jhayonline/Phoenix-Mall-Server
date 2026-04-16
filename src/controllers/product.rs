@@ -1,30 +1,50 @@
-#![allow(clippy::missing_errors_doc)]
-#![allow(clippy::unnecessary_struct_initialization)]
-#![allow(clippy::unused_async)]
-use crate::models::_entities::products::Column;
+#[allow(clippy::missing_errors_doc)]
+#[allow(clippy::unnecessary_struct_initialization)]
+#[allow(clippy::unused_async)]
 use crate::{
     models::{
         _entities::users,
-        products::{self, CreateProductParams, UpdateProductParams},
+        products::{self, CreateProductParams, ProductQueryParams, UpdateProductParams},
     },
     views::products::ProductResponse,
 };
 use loco_rs::prelude::*;
 use nanoid::nanoid;
 use num_traits::cast::FromPrimitive;
-use sea_orm::QueryOrder;
 
+// List all products with pagination, filters, and search
 #[debug_handler]
-pub async fn list(State(ctx): State<AppContext>) -> Result<Response> {
-    let products = products::Entity::find()
-        .filter(Column::Status.eq("active"))
-        .order_by_desc(Column::CreatedAt)
-        .all(&ctx.db)
-        .await?;
+pub async fn list(
+    State(ctx): State<AppContext>,
+    Query(params): Query<ProductQueryParams>,
+) -> Result<Response> {
+    tracing::info!("📦 PRODUCT LIST ENDPOINT CALLED with params: {:?}", params);
 
-    format::json(products)
+    let paginated = products::Entity::paginate(&ctx.db, &params).await?;
+    tracing::info!("Found {} products", paginated.items.len());
+
+    format::json(paginated)
 }
 
+// Get single product by pid (public)
+#[debug_handler]
+pub async fn get_by_pid(
+    State(ctx): State<AppContext>,
+    Path(pid): Path<String>,
+) -> Result<Response> {
+    let product = products::Model::find_by_pid(&ctx.db, &pid)
+        .await?
+        .ok_or_else(|| Error::NotFound)?;
+
+    // Increment view count
+    let mut product_active: products::ActiveModel = product.clone().into();
+    product_active.views_count = ActiveValue::set(Some(product.views_count.unwrap_or(0) + 1));
+    product_active.update(&ctx.db).await?;
+
+    format::json(ProductResponse::new(&product))
+}
+
+// Create new product (auth required)
 #[debug_handler]
 pub async fn create(
     auth: auth::JWT,
@@ -34,13 +54,13 @@ pub async fn create(
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
 
     let pid = nanoid!(21);
-    let product_id = uuid::Uuid::new_v4(); // Generate UUID for id
+    let product_id = uuid::Uuid::new_v4();
 
     let decimal_price = loco_rs::prelude::Decimal::from_f64(params.price)
         .ok_or_else(|| Error::BadRequest("Invalid price".to_string()))?;
 
     let product = products::ActiveModel {
-        id: ActiveValue::set(product_id), // Add this line
+        id: ActiveValue::set(product_id),
         pid: ActiveValue::set(pid),
         title: ActiveValue::set(params.title),
         description: ActiveValue::set(params.description),
@@ -61,18 +81,7 @@ pub async fn create(
     format::json(ProductResponse::new(&product))
 }
 
-#[debug_handler]
-pub async fn get_by_pid(
-    State(ctx): State<AppContext>,
-    Path(pid): Path<String>,
-) -> Result<Response> {
-    let product = products::Model::find_by_pid(&ctx.db, &pid)
-        .await?
-        .ok_or_else(|| Error::NotFound)?;
-
-    format::json(ProductResponse::new(&product))
-}
-
+// Update product (seller only)
 #[debug_handler]
 pub async fn update(
     auth: auth::JWT,
@@ -86,7 +95,6 @@ pub async fn update(
         .await?
         .ok_or_else(|| Error::NotFound)?;
 
-    // Check if user is the seller
     if product.seller_id != user.id {
         return unauthorized("You can only update your own listings");
     }
@@ -127,6 +135,7 @@ pub async fn update(
     format::json(ProductResponse::new(&updated_product))
 }
 
+// Delete product (seller only)
 #[debug_handler]
 pub async fn delete_product(
     auth: auth::JWT,
@@ -139,7 +148,6 @@ pub async fn delete_product(
         .await?
         .ok_or_else(|| Error::NotFound)?;
 
-    // Check if user is the seller
     if product.seller_id != user.id {
         return unauthorized("You can only delete your own listings");
     }
@@ -148,6 +156,7 @@ pub async fn delete_product(
     format::empty_json()
 }
 
+// Mark product as sold (seller only)
 #[debug_handler]
 pub async fn mark_sold(
     auth: auth::JWT,

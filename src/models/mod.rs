@@ -5,3 +5,6 @@ pub mod favorites;
 pub mod product_images;
 pub mod products;
 pub mod user_sessions;
+pub mod carts;
+pub mod order_items;
+pub mod orders;

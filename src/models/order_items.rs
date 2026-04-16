@@ -1,6 +1,6 @@
-pub use super::_entities::categories::{ActiveModel, Entity, Model};
 use sea_orm::entity::prelude::*;
-pub type Categories = Entity;
+pub use super::_entities::order_items::{ActiveModel, Model, Entity};
+pub type OrderItems = Entity;
 
 #[async_trait::async_trait]
 impl ActiveModelBehavior for ActiveModel {
@@ -13,14 +13,7 @@ impl ActiveModelBehavior for ActiveModel {
 }
 
 // implement your read-oriented logic here
-impl Model {
-    pub async fn find_by_slug(db: &DatabaseConnection, slug: &str) -> Result<Option<Self>, DbErr> {
-        Entity::find()
-            .filter(super::_entities::categories::Column::Slug.eq(slug))
-            .one(db)
-            .await
-    }
-}
+impl Model {}
 
 // implement your write-oriented logic here
 impl ActiveModel {}

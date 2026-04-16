@@ -29,6 +29,8 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::carts::Entity")]
+    Carts,
     #[sea_orm(
         belongs_to = "super::categories::Entity",
         from = "Column::CategoryId",
@@ -39,6 +41,8 @@ pub enum Relation {
     Categories,
     #[sea_orm(has_many = "super::favorites::Entity")]
     Favorites,
+    #[sea_orm(has_many = "super::order_items::Entity")]
+    OrderItems,
     #[sea_orm(has_many = "super::product_images::Entity")]
     ProductImages,
     #[sea_orm(
@@ -51,6 +55,12 @@ pub enum Relation {
     Users,
 }
 
+impl Related<super::carts::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Carts.def()
+    }
+}
+
 impl Related<super::categories::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Categories.def()
@@ -60,6 +70,12 @@ impl Related<super::categories::Entity> for Entity {
 impl Related<super::favorites::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Favorites.def()
+    }
+}
+
+impl Related<super::order_items::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::OrderItems.def()
     }
 }
 

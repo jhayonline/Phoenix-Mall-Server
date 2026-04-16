@@ -10,6 +10,9 @@ mod m20260413_083240_products;
 mod m20260413_083250_create_product_images;
 mod m20260413_083302_favorites;
 mod m20260414_180046_add_favorites;
+mod m20260415_141533_carts;
+mod m20260415_141543_orders;
+mod m20260415_141552_create_order_items;
 pub struct Migrator;
 
 #[async_trait::async_trait]
@@ -24,6 +27,9 @@ impl MigratorTrait for Migrator {
             Box::new(m20260413_083250_create_product_images::Migration),
             Box::new(m20260413_083302_favorites::Migration),
             Box::new(m20260414_180046_add_favorites::Migration),
+            Box::new(m20260415_141533_carts::Migration),
+            Box::new(m20260415_141543_orders::Migration),
+            Box::new(m20260415_141552_create_order_items::Migration),
             // inject-above (do not remove this comment)
         ]
     }

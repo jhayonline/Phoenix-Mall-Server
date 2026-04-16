@@ -1,6 +1,6 @@
-pub use super::_entities::categories::{ActiveModel, Entity, Model};
+pub use super::_entities::carts::{ActiveModel, Entity, Model};
 use sea_orm::entity::prelude::*;
-pub type Categories = Entity;
+pub type Carts = Entity;
 
 #[async_trait::async_trait]
 impl ActiveModelBehavior for ActiveModel {
@@ -14,10 +14,13 @@ impl ActiveModelBehavior for ActiveModel {
 
 // implement your read-oriented logic here
 impl Model {
-    pub async fn find_by_slug(db: &DatabaseConnection, slug: &str) -> Result<Option<Self>, DbErr> {
+    pub async fn find_by_user_id(
+        db: &DatabaseConnection,
+        user_id: i32,
+    ) -> Result<Vec<Self>, DbErr> {
         Entity::find()
-            .filter(super::_entities::categories::Column::Slug.eq(slug))
-            .one(db)
+            .filter(super::_entities::carts::Column::UserId.eq(user_id))
+            .all(db)
             .await
     }
 }
