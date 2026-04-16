@@ -16,6 +16,7 @@ pub struct Model {
     pub display_order: Option<i32>,
     pub is_active: Option<bool>,
     pub created_at: Option<DateTimeWithTimeZone>,
+    pub description: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

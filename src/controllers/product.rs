@@ -18,10 +18,13 @@ pub async fn list(
     State(ctx): State<AppContext>,
     Query(params): Query<ProductQueryParams>,
 ) -> Result<Response> {
-    tracing::info!("📦 PRODUCT LIST ENDPOINT CALLED with params: {:?}", params);
-
     let paginated = products::Entity::paginate(&ctx.db, &params).await?;
-    tracing::info!("Found {} products", paginated.items.len());
+    tracing::info!(
+        "Found {} products, page {} of {}",
+        paginated.items.len(),
+        paginated.page,
+        paginated.total_pages
+    );
 
     format::json(paginated)
 }
