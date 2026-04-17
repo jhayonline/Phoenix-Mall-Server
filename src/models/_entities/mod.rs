@@ -2,7 +2,6 @@
 
 pub mod prelude;
 
-pub mod carts;
 pub mod categories;
 pub mod favorites;
 pub mod order_items;

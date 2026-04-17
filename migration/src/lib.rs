@@ -9,8 +9,6 @@ mod m20260413_083227_categories;
 mod m20260413_083240_products;
 mod m20260413_083250_create_product_images;
 mod m20260413_083302_favorites;
-mod m20260414_180046_add_favorites;
-mod m20260415_141533_carts;
 mod m20260415_141543_orders;
 mod m20260415_141552_create_order_items;
 mod m20260416_095308_add_description_to_categories;
@@ -27,8 +25,6 @@ impl MigratorTrait for Migrator {
             Box::new(m20260413_083240_products::Migration),
             Box::new(m20260413_083250_create_product_images::Migration),
             Box::new(m20260413_083302_favorites::Migration),
-            Box::new(m20260414_180046_add_favorites::Migration),
-            Box::new(m20260415_141533_carts::Migration),
             Box::new(m20260415_141543_orders::Migration),
             Box::new(m20260415_141552_create_order_items::Migration),
             Box::new(m20260416_095308_add_description_to_categories::Migration),

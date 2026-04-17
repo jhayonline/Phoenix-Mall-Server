@@ -6,6 +6,7 @@
   level: 1
   display_order: 1
   is_active: true
+  description: "Laptops, Computers, Printers etc"
 
 - id: 22222222-2222-2222-2222-222222222222
   name: "Fashion"
@@ -14,6 +15,7 @@
   level: 1
   display_order: 2
   is_active: true
+  description: "Clothing & Accessories"
 
 - id: 33333333-3333-3333-3333-333333333333
   name: "Vehicles"
@@ -22,6 +24,7 @@
   level: 1
   display_order: 3
   is_active: true
+  description: "Cars, Motorcycles & More"
 
 - id: 44444444-4444-4444-4444-444444444444
   name: "Home & Living"
@@ -30,95 +33,123 @@
   level: 1
   display_order: 4
   is_active: true
+  description: "Home & Living"
 
 - id: 55555555-5555-5555-5555-555555555555
-  name: "Okada & Spare Parts"
-  slug: "okada-spares"
+  name: "Food & Agriculture"
+  slug: "food-agriculture"
   parent_id: null
   level: 1
   display_order: 5
   is_active: true
+  description: "Fresh Food & Farm Products"
 
-# Level 2 - Electronics Subcategories
 - id: 66666666-6666-6666-6666-666666666666
-  name: "Phones"
-  slug: "phones"
-  parent_id: 11111111-1111-1111-1111-111111111111
-  level: 2
-  display_order: 1
+  name: "Babies & Kids"
+  slug: "babies-kids"
+  parent_id: null
+  level: 1
+  display_order: 6
   is_active: true
+  description: "Baby Items & Kids Products"
 
 - id: 77777777-7777-7777-7777-777777777777
-  name: "Laptops"
-  slug: "laptops"
+  name: "Beauty & Personal Care"
+  slug: "beauty-personal-care"
+  parent_id: null
+  level: 1
+  display_order: 7
+  is_active: true
+  description: "Skincare & Cosmetics"
+
+# Level 2 Categories
+- id: 88888888-8888-8888-8888-888888888888
+  name: "Mobile Phones"
+  slug: "mobile-phones"
+  parent_id: 11111111-1111-1111-1111-111111111111
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Mobile Phones, Tablets"
+
+- id: 99999999-9999-9999-9999-999999999999
+  name: "Furniture"
+  slug: "furniture"
   parent_id: 11111111-1111-1111-1111-111111111111
   level: 2
   display_order: 2
   is_active: true
+  description: "Home & Office Furniture"
 
-# Level 2 - Fashion Subcategories
-- id: 88888888-8888-8888-8888-888888888888
-  name: "Men's Clothing"
-  slug: "mens-clothing"
-  parent_id: 22222222-2222-2222-2222-222222222222
-  level: 2
-  display_order: 1
-  is_active: true
-
-- id: 99999999-9999-9999-9999-999999999999
-  name: "Women's Clothing"
-  slug: "womens-clothing"
-  parent_id: 22222222-2222-2222-2222-222222222222
-  level: 2
-  display_order: 2
-  is_active: true
-
-# Level 2 - Vehicles Subcategories
 - id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-  name: "Cars"
-  slug: "cars"
-  parent_id: 33333333-3333-3333-3333-333333333333
+  name: "Home Appliances"
+  slug: "home-appliances"
+  parent_id: 22222222-2222-2222-2222-222222222222
   level: 2
-  display_order: 1
+  display_order: 3
   is_active: true
+  description: "Kitchen & Home Appliances"
 
 - id: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
-  name: "Motorcycles"
-  slug: "motorcycles"
+  name: "Jewelries"
+  slug: "jewelries"
+  parent_id: 22222222-2222-2222-2222-222222222222
+  level: 2
+  display_order: 4
+  is_active: true
+  description: "Rings, Necklaces & More"
+
+- id: cccccccc-cccc-cccc-cccc-cccccccccccc
+  name: "Property"
+  slug: "property"
   parent_id: 33333333-3333-3333-3333-333333333333
   level: 2
-  display_order: 2
+  display_order: 5
   is_active: true
+  description: "Houses & Real Estate"
 
-# Level 3 - Phone Brands
-- id: cccccccc-cccc-cccc-cccc-cccccccccccc
+- id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  name: "Services"
+  slug: "services"
+  parent_id: 33333333-3333-3333-3333-333333333333
+  level: 2
+  display_order: 6
+  is_active: true
+  description: "Professional Services"
+
+# Level 3 Categories
+- id: eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee
   name: "iPhone"
   slug: "iphone"
-  parent_id: 66666666-6666-6666-6666-666666666666
+  parent_id: 88888888-8888-8888-8888-888888888888
   level: 3
   display_order: 1
   is_active: true
+  description: "Apple iPhones"
 
-- id: dddddddd-dddd-dddd-dddd-dddddddddddd
+- id: ffffffff-ffff-ffff-ffff-ffffffffffff
   name: "Samsung"
   slug: "samsung"
-  parent_id: 66666666-6666-6666-6666-666666666666
+  parent_id: 88888888-8888-8888-8888-888888888888
   level: 3
   display_order: 2
   is_active: true
+  description: "Samsung Galaxy Phones"
 
-- id: eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee
+- id: 00000000-0000-0000-0000-000000000001
   name: "Tecno"
   slug: "tecno"
-  parent_id: 66666666-6666-6666-6666-666666666666
+  parent_id: 88888888-8888-8888-8888-888888888888
   level: 3
   display_order: 3
   is_active: true
+  description: "Tecno Mobile Phones"
 
-- id: ffffffff-ffff-ffff-ffff-ffffffffffff
+- id: 00000000-0000-0000-0000-000000000002
   name: "Infinix"
   slug: "infinix"
-  parent_id: 66666666-6666-6666-6666-666666666666
+  parent_id: 88888888-8888-8888-8888-888888888888
   level: 3
   display_order: 4
   is_active: true
+  description: "Infinix Mobile Phones"

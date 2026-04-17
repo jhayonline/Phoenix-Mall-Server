@@ -1,6 +1,7 @@
-#[allow(clippy::missing_errors_doc)]
-#[allow(clippy::unnecessary_struct_initialization)]
-#[allow(clippy::unused_async)]
+#![allow(clippy::missing_errors_doc)]
+#![allow(clippy::unnecessary_struct_initialization)]
+#![allow(clippy::unused_async)]
+use crate::models::_entities::products::Column;
 use crate::{
     models::{
         _entities::users,
@@ -11,6 +12,7 @@ use crate::{
 use loco_rs::prelude::*;
 use nanoid::nanoid;
 use num_traits::cast::FromPrimitive;
+use sea_orm::{Condition, QuerySelect};
 
 // List all products with pagination, filters, and search
 #[debug_handler]
@@ -183,6 +185,38 @@ pub async fn mark_sold(
     format::json(ProductResponse::new(&updated_product))
 }
 
+// Get search suggestions (autocomplete)
+#[debug_handler]
+pub async fn search_suggestions(
+    State(ctx): State<AppContext>,
+    Query(params): Query<ProductQueryParams>,
+) -> Result<Response> {
+    let search_term = params.search.unwrap_or_default();
+
+    if search_term.len() < 2 {
+        return format::json(Vec::<String>::new());
+    }
+
+    let pattern = format!("%{}%", search_term);
+
+    let suggestions = products::Entity::find()
+        .filter(Column::Status.eq("active"))
+        .filter(
+            Condition::any()
+                .add(Column::Title.like(&pattern))
+                .add(Column::Description.like(&pattern)),
+        )
+        .limit(10)
+        .all(&ctx.db)
+        .await?;
+
+    // Extract unique titles for suggestions
+    let mut unique_titles: Vec<String> = suggestions.into_iter().map(|p| p.title).collect();
+    unique_titles.dedup();
+
+    format::json(unique_titles)
+}
+
 pub fn routes() -> Routes {
     Routes::new()
         .prefix("api/products")
@@ -192,4 +226,5 @@ pub fn routes() -> Routes {
         .add("/update/{pid}", put(update))
         .add("/delete/{pid}", delete(delete_product))
         .add("/{pid}/mark-sold", post(mark_sold))
+        .add("/search/suggestions", get(search_suggestions))
 }
