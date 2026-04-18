@@ -7,6 +7,8 @@ pub mod favorites;
 pub mod order_items;
 pub mod orders;
 pub mod product_images;
+pub mod product_reviews;
+pub mod product_views;
 pub mod products;
 pub mod user_sessions;
 pub mod users;

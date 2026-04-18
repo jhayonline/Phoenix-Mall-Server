@@ -3,7 +3,7 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(table_name = "products")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
@@ -25,6 +25,10 @@ pub struct Model {
     pub expires_at: Option<DateTimeWithTimeZone>,
     pub created_at: Option<DateTimeWithTimeZone>,
     pub updated_at: Option<DateTimeWithTimeZone>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub average_rating: Option<f64>,
+    pub total_reviews: Option<i32>,
+    pub wishlist_count: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -43,6 +47,10 @@ pub enum Relation {
     OrderItems,
     #[sea_orm(has_many = "super::product_images::Entity")]
     ProductImages,
+    #[sea_orm(has_many = "super::product_reviews::Entity")]
+    ProductReviews,
+    #[sea_orm(has_many = "super::product_views::Entity")]
+    ProductViews,
     #[sea_orm(
         belongs_to = "super::users::Entity",
         from = "Column::SellerId",
@@ -74,6 +82,18 @@ impl Related<super::order_items::Entity> for Entity {
 impl Related<super::product_images::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::ProductImages.def()
+    }
+}
+
+impl Related<super::product_reviews::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ProductReviews.def()
+    }
+}
+
+impl Related<super::product_views::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ProductViews.def()
     }
 }
 

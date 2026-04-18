@@ -19,6 +19,12 @@ pub struct ProductResponse {
     pub created_at: Option<chrono::DateTime<chrono::FixedOffset>>,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct CreateReviewParams {
+    pub rating: i32,
+    pub comment: Option<String>,
+}
+
 impl ProductResponse {
     pub fn new(product: &products::Model) -> Self {
         Self {

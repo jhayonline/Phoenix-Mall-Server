@@ -2,6 +2,7 @@
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
 use crate::models::_entities::products::Column;
+use crate::models::_entities::{favorites, product_reviews};
 use crate::{
     models::{
         _entities::users,
@@ -9,10 +10,12 @@ use crate::{
     },
     views::products::ProductResponse,
 };
+use axum::extract::Request;
 use loco_rs::prelude::*;
 use nanoid::nanoid;
 use num_traits::cast::FromPrimitive;
-use sea_orm::{Condition, QuerySelect};
+use sea_orm::{Condition, PaginatorTrait, QuerySelect};
+use serde::Deserialize;
 
 // List all products with pagination, filters, and search
 #[debug_handler]
@@ -41,12 +44,52 @@ pub async fn get_by_pid(
         .await?
         .ok_or_else(|| Error::NotFound)?;
 
-    // Increment view count
-    let mut product_active: products::ActiveModel = product.clone().into();
-    product_active.views_count = ActiveValue::set(Some(product.views_count.unwrap_or(0) + 1));
-    product_active.update(&ctx.db).await?;
+    // Get wishlist count
+    let wishlist_count = favorites::Entity::find()
+        .filter(favorites::Column::ProductId.eq(product.id))
+        .count(&ctx.db)
+        .await?;
 
-    format::json(ProductResponse::new(&product))
+    // Get rating info from database
+    let reviews = product_reviews::Entity::find()
+        .filter(product_reviews::Column::ProductId.eq(product.id))
+        .all(&ctx.db)
+        .await?;
+
+    let (average_rating, total_reviews) = if reviews.is_empty() {
+        (0.0, 0)
+    } else {
+        let sum: i32 = reviews.iter().map(|r| r.rating).sum();
+        let avg = sum as f64 / reviews.len() as f64;
+        (avg, reviews.len())
+    };
+
+    // Increment view count
+    let mut active_product: products::ActiveModel = product.clone().into();
+    let current_views = product.views_count.unwrap_or(0);
+    active_product.views_count = ActiveValue::set(Some(current_views + 1));
+    active_product.update(&ctx.db).await?;
+
+    format::json(serde_json::json!({
+        "id": product.id,
+        "pid": product.pid,
+        "title": product.title,
+        "description": product.description,
+        "price": product.price,
+        "condition": product.condition,
+        "location": product.location,
+        "category_id": product.category_id,
+        "seller_id": product.seller_id,
+        "status": product.status,
+        "whatsapp_contact": product.whatsapp_contact,
+        "phone_contact": product.phone_contact,
+        "views_count": current_views + 1,
+        "created_at": product.created_at,
+        "updated_at": product.updated_at,
+        "wishlist_count": wishlist_count,
+        "average_rating": average_rating,
+        "total_reviews": total_reviews,
+    }))
 }
 
 // Create new product (auth required)
@@ -217,6 +260,152 @@ pub async fn search_suggestions(
     format::json(unique_titles)
 }
 
+// Track product view
+#[debug_handler]
+pub async fn track_view(
+    Path(pid): Path<String>,
+    State(ctx): State<AppContext>,
+    req: Request,
+) -> Result<Response> {
+    use crate::models::_entities::product_views;
+
+    let product = products::Model::find_by_pid(&ctx.db, &pid)
+        .await?
+        .ok_or_else(|| Error::NotFound)?;
+
+    let ip = req
+        .headers()
+        .get("x-forwarded-for")
+        .and_then(|v| v.to_str().ok())
+        .or_else(|| req.headers().get("x-real-ip").and_then(|v| v.to_str().ok()))
+        .unwrap_or("unknown");
+
+    // Check if already viewed in last hour
+    let one_hour_ago = chrono::Utc::now() - chrono::Duration::hours(1);
+    let existing = product_views::Entity::find()
+        .filter(product_views::Column::ProductId.eq(product.id))
+        .filter(product_views::Column::IpAddress.eq(ip))
+        .filter(product_views::Column::ViewedAt.gt(one_hour_ago))
+        .one(&ctx.db)
+        .await?;
+
+    if existing.is_none() {
+        // Record view
+        let view = product_views::ActiveModel {
+            id: ActiveValue::set(Uuid::new_v4()),
+            product_id: ActiveValue::set(product.id),
+            user_id: ActiveValue::set(None),
+            ip_address: ActiveValue::set(Some(ip.to_string())),
+            viewed_at: ActiveValue::set(Some(chrono::Utc::now().into())),
+        };
+        view.insert(&ctx.db).await?;
+
+        // Increment product view count
+        let mut active_product: products::ActiveModel = product.clone().into();
+        let current_views = product.views_count.unwrap_or(0);
+        active_product.views_count = ActiveValue::set(Some(current_views + 1));
+        active_product.update(&ctx.db).await?;
+    }
+
+    format::empty_json()
+}
+
+// Add a review
+#[derive(Debug, Deserialize)]
+pub struct CreateReviewParams {
+    pub rating: i32,
+    pub comment: Option<String>,
+}
+
+#[debug_handler]
+pub async fn add_review(
+    auth: auth::JWT,
+    State(ctx): State<AppContext>,
+    Path(pid): Path<String>,
+    Json(params): Json<CreateReviewParams>,
+) -> Result<Response> {
+    let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
+    let product = products::Model::find_by_pid(&ctx.db, &pid)
+        .await?
+        .ok_or_else(|| Error::NotFound)?;
+
+    // Check if user already reviewed
+    let existing = product_reviews::Entity::find()
+        .filter(product_reviews::Column::ProductId.eq(product.id))
+        .filter(product_reviews::Column::UserId.eq(user.id))
+        .one(&ctx.db)
+        .await?;
+
+    if existing.is_some() {
+        return bad_request("You have already reviewed this product");
+    }
+
+    // Create review
+    let review = product_reviews::ActiveModel {
+        id: ActiveValue::set(Uuid::new_v4()),
+        product_id: ActiveValue::set(product.id),
+        user_id: ActiveValue::set(user.id),
+        rating: ActiveValue::set(params.rating),
+        comment: ActiveValue::set(params.comment),
+        created_at: ActiveValue::set(Some(chrono::Utc::now().into())),
+    };
+    review.insert(&ctx.db).await?;
+
+    // Update product average rating
+    let all_reviews = product_reviews::Entity::find()
+        .filter(product_reviews::Column::ProductId.eq(product.id))
+        .all(&ctx.db)
+        .await?;
+
+    let sum: i32 = all_reviews.iter().map(|r| r.rating).sum();
+    let avg = sum as f64 / all_reviews.len() as f64;
+
+    let mut active_product: products::ActiveModel = product.into();
+    active_product.average_rating = ActiveValue::set(Some(avg));
+    active_product.total_reviews = ActiveValue::set(Some(all_reviews.len() as i32));
+    active_product.update(&ctx.db).await?;
+
+    format::json(serde_json::json!({
+        "success": true,
+        "message": "Review submitted successfully"
+    }))
+}
+
+// Get reviews for a product
+#[debug_handler]
+pub async fn get_reviews(
+    State(ctx): State<AppContext>,
+    Path(pid): Path<String>,
+) -> Result<Response> {
+    let product = products::Model::find_by_pid(&ctx.db, &pid)
+        .await?
+        .ok_or_else(|| Error::NotFound)?;
+
+    let reviews = product_reviews::Entity::find()
+        .filter(product_reviews::Column::ProductId.eq(product.id))
+        .find_also_related(users::Entity)
+        .all(&ctx.db)
+        .await?;
+
+    let reviews_with_users: Vec<serde_json::Value> = reviews
+        .into_iter()
+        .map(|(review, user)| {
+            serde_json::json!({
+                "id": review.id,
+                "rating": review.rating,
+                "comment": review.comment,
+                "created_at": review.created_at,
+                "user": user.map(|u| serde_json::json!({
+                    "name": u.name,
+                    "avatar_url": u.avatar_url
+                }))
+            })
+        })
+        .collect();
+
+    format::json(reviews_with_users)
+}
+
 pub fn routes() -> Routes {
     Routes::new()
         .prefix("api/products")
@@ -227,4 +416,7 @@ pub fn routes() -> Routes {
         .add("/delete/{pid}", delete(delete_product))
         .add("/{pid}/mark-sold", post(mark_sold))
         .add("/search/suggestions", get(search_suggestions))
+        .add("/{pid}/track-view", post(track_view))
+        .add("/{pid}/reviews", post(add_review))
+        .add("/{pid}/reviews", get(get_reviews))
 }

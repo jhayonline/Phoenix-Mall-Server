@@ -5,6 +5,8 @@ pub use super::favorites::Entity as Favorites;
 pub use super::order_items::Entity as OrderItems;
 pub use super::orders::Entity as Orders;
 pub use super::product_images::Entity as ProductImages;
+pub use super::product_reviews::Entity as ProductReviews;
+pub use super::product_views::Entity as ProductViews;
 pub use super::products::Entity as Products;
 pub use super::user_sessions::Entity as UserSessions;
 pub use super::users::Entity as Users;

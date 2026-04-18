@@ -12,14 +12,12 @@ pub async fn add(
     Path(product_pid): Path<String>,
 ) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
-
     let product = products::Entity::find()
         .filter(products::Column::Pid.eq(product_pid))
         .one(&ctx.db)
         .await?
         .ok_or_else(|| Error::NotFound)?;
 
-    // Check if already favorited
     let existing = favorites::Entity::find()
         .filter(favorites::Column::UserId.eq(user.id))
         .filter(favorites::Column::ProductId.eq(product.id))
