@@ -7,6 +7,7 @@ use crate::{
     models::{_entities::users, products::Entity as Products, users::UpdateProfileParams},
     views::profile::{ProfileResponse, UserStatsResponse},
 };
+use axum::extract::Multipart;
 use loco_rs::prelude::*;
 use sea_orm::{ColumnTrait, PaginatorTrait, QueryOrder, QuerySelect};
 
@@ -134,6 +135,80 @@ pub async fn seller_products(auth: auth::JWT, State(ctx): State<AppContext>) -> 
     format::json(products_with_stats)
 }
 
+// Add this function to handle avatar upload
+#[debug_handler]
+pub async fn upload_avatar(
+    auth: auth::JWT,
+    State(ctx): State<AppContext>,
+    mut multipart: Multipart,
+) -> Result<Response> {
+    let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
+
+    // Process uploaded file
+    let mut uploaded_file = None;
+    let mut file_extension = String::new();
+
+    while let Some(field) = multipart.next_field().await.map_err(|err| {
+        tracing::error!(error = ?err, "could not read multipart");
+        Error::BadRequest("could not read multipart".into())
+    })? {
+        let file_name = match field.file_name() {
+            Some(name) => name.to_string(),
+            None => return Err(Error::BadRequest("file name not found".into())),
+        };
+
+        let content_type = field
+            .content_type()
+            .unwrap_or("application/octet-stream")
+            .to_string();
+
+        // Validate content type
+        if !content_type.starts_with("image/") {
+            return bad_request("Only image files are allowed");
+        }
+
+        // Get file extension
+        file_extension = std::path::Path::new(&file_name)
+            .extension()
+            .and_then(|e| e.to_str())
+            .unwrap_or("jpg")
+            .to_string();
+
+        let content = field.bytes().await.map_err(|err| {
+            tracing::error!(error = ?err, "could not read bytes");
+            Error::BadRequest("could not read bytes".into())
+        })?;
+
+        uploaded_file = Some(content);
+        break; // Only process first file
+    }
+
+    let content = uploaded_file.ok_or_else(|| Error::BadRequest("No file uploaded".into()))?;
+
+    // Generate unique filename
+    let unique_name = format!("avatar_{}_{}.{}", user.id, Uuid::new_v4(), file_extension);
+    let upload_dir = std::path::Path::new("storage/uploads/avatars");
+
+    if !upload_dir.exists() {
+        tokio::fs::create_dir_all(upload_dir).await?;
+    }
+
+    let file_path = upload_dir.join(&unique_name);
+    tokio::fs::write(&file_path, content).await?;
+
+    let avatar_url = format!("/uploads/avatars/{}", unique_name);
+
+    // Update user's avatar_url
+    let mut user_active: users::ActiveModel = user.into();
+    user_active.avatar_url = ActiveValue::set(Some(avatar_url.clone()));
+    user_active.update(&ctx.db).await?;
+
+    format::json(serde_json::json!({
+        "avatar_url": avatar_url,
+        "message": "Avatar uploaded successfully"
+    }))
+}
+
 pub fn routes() -> Routes {
     Routes::new()
         .prefix("api/profile")
@@ -142,4 +217,5 @@ pub fn routes() -> Routes {
         .add("/listings", get(my_listings))
         .add("/stats", get(my_stats))
         .add("/seller/products", get(seller_products))
+        .add("/avatar", post(upload_avatar))
 }
