@@ -1,0 +1,124 @@
+- 🚗 Mobility
+  -- Cars
+  -- Motorbikes
+  -- Bicycles
+
+- 🏡 Real Estate
+  -- Rentals
+    --- Houses
+    --- Apartments
+    --- Hostels
+    --- Offices
+    --- Shops
+
+  -- Prperties for Sale
+    --- Houses
+    --- Buildings
+    --- Apartments
+    --- Shops
+
+- 📱 Mobile Devices
+  -- Smartphones
+  -- Tablets
+  -- Mobile Accessories
+  -- Smartwatches
+
+- 💻 Computing & Electronics
+  -- Laptops
+  -- Desktop Computers
+  -- Monitors
+  -- Computer Components
+  -- Computer Accessories
+  -- System Units
+  -- Televisions
+  -- Audio Equipment
+  -- Headphones
+  -- Cameras
+
+- 🎮 Games
+  -- Video Games
+  -- Consoles & Controllers
+  -- Board & Card games
+
+- 🛋️ Home & Living
+  -- Furniture
+  -- Lighting
+  -- Appliances
+    -- Kitchen Appliances
+    -- Home Appliances
+  -- Cookware
+
+- 👗 Fashion & Style
+  -- Men
+    --- Clothing
+    --- Footwear
+    --- Accessories
+  -- Women
+    --- Clothing
+    --- Footwear
+    --- Accessories (eg. belts)
+  -- Kids
+    --- Clothing
+    --- Footwear
+    --- Accessories
+  -- Babies
+    --- Clothing
+    --- Footwear
+    --- Accessories
+
+- 💎 Jewelry
+  -- Men
+    -- Rings & Earrings
+    -- Watches
+    -- Necklaces
+    -- Bracelets
+    -- Cufflinks
+
+  -- Women
+    -- Rings & Earings
+    -- Watches
+    -- Necklaces
+    -- Beads
+    -- Bracelets & Bangles
+    -- Anklets
+
+- 💄 Beauty & Personal Care
+  -- Hair & Oral care
+  -- Skincare
+  -- Fragrances
+  -- Makeup
+  -- Intimate Wellness
+  -- Beauty Accessories
+
+- 🧸 Baby & Kids
+  -- Fashion
+    -- Clothing
+    -- Footwear
+  -- Games & Toys
+  -- Baby Food & Nutrition
+  -- Baby Accessories
+  -- Playground & Outdoor
+
+- 🛠️ Services
+  -- Home Services
+  -- Tech Services
+  -- Repair & Maintenance
+  -- Other Services
+
+- 🌾 Food & Agriculture
+  -- Preserved Food
+  -- Fresh Food
+  -- Farm Produce
+  -- Agricultural Supplies
+
+- 🐾 Pets & Animals
+  -- Pet Accessories
+  -- Pet Food & Feed
+  -- Cats
+  -- Dogs
+  -- Fish
+  -- Birds
+  -- Rabbits
+  -- Other Animals
+
+

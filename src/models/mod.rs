@@ -7,3 +7,5 @@ pub mod products;
 pub mod user_sessions;
 pub mod order_items;
 pub mod orders;
+pub mod conversations;
+pub mod messages;

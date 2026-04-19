@@ -8,3 +8,4 @@ pub mod favorites;
 pub mod images;
 pub mod cart;
 pub mod admin;
+pub mod chat;

@@ -1,155 +1,976 @@
 # Level 1 Categories
 - id: 11111111-1111-1111-1111-111111111111
-  name: "Electronics"
-  slug: "electronics"
+  name: "Mobility"
+  slug: "mobility"
   parent_id: null
   level: 1
   display_order: 1
   is_active: true
-  description: "Laptops, Computers, Printers etc"
+  description: "Cars, Motorbikes, Bicycles"
 
 - id: 22222222-2222-2222-2222-222222222222
-  name: "Fashion"
-  slug: "fashion"
+  name: "Real Estate"
+  slug: "real-estate"
   parent_id: null
   level: 1
   display_order: 2
   is_active: true
-  description: "Clothing & Accessories"
+  description: "Rentals & Properties for Sale"
 
 - id: 33333333-3333-3333-3333-333333333333
-  name: "Vehicles"
-  slug: "vehicles"
+  name: "Mobile Devices"
+  slug: "mobile-devices"
   parent_id: null
   level: 1
   display_order: 3
   is_active: true
-  description: "Cars, Motorcycles & More"
+  description: "Smartphones, Tablets, Accessories"
 
 - id: 44444444-4444-4444-4444-444444444444
-  name: "Home & Living"
-  slug: "home-living"
+  name: "Computing & Electronics"
+  slug: "computing-electronics"
   parent_id: null
   level: 1
   display_order: 4
   is_active: true
-  description: "Home & Living"
+  description: "Laptops, Desktops, TVs, Cameras"
 
 - id: 55555555-5555-5555-5555-555555555555
-  name: "Food & Agriculture"
-  slug: "food-agriculture"
+  name: "Games"
+  slug: "games"
   parent_id: null
   level: 1
   display_order: 5
   is_active: true
-  description: "Fresh Food & Farm Products"
+  description: "Video Games, Consoles, Board Games"
 
 - id: 66666666-6666-6666-6666-666666666666
-  name: "Babies & Kids"
-  slug: "babies-kids"
+  name: "Home & Living"
+  slug: "home-living"
   parent_id: null
   level: 1
   display_order: 6
   is_active: true
-  description: "Baby Items & Kids Products"
+  description: "Furniture, Appliances, Lighting"
 
 - id: 77777777-7777-7777-7777-777777777777
-  name: "Beauty & Personal Care"
-  slug: "beauty-personal-care"
+  name: "Fashion & Style"
+  slug: "fashion-style"
   parent_id: null
   level: 1
   display_order: 7
   is_active: true
-  description: "Skincare & Cosmetics"
+  description: "Men, Women, Kids, Babies"
 
-# Level 2 Categories
 - id: 88888888-8888-8888-8888-888888888888
-  name: "Mobile Phones"
-  slug: "mobile-phones"
+  name: "Jewelry"
+  slug: "jewelry"
+  parent_id: null
+  level: 1
+  display_order: 8
+  is_active: true
+  description: "Rings, Watches, Necklaces, Bracelets"
+
+- id: 99999999-9999-9999-9999-999999999999
+  name: "Beauty & Personal Care"
+  slug: "beauty-personal-care"
+  parent_id: null
+  level: 1
+  display_order: 9
+  is_active: true
+  description: "Hair, Skincare, Makeup, Fragrances"
+
+- id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  name: "Baby & Kids"
+  slug: "baby-kids"
+  parent_id: null
+  level: 1
+  display_order: 10
+  is_active: true
+  description: "Clothing, Toys, Baby Accessories"
+
+- id: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+  name: "Services"
+  slug: "services"
+  parent_id: null
+  level: 1
+  display_order: 11
+  is_active: true
+  description: "Home, Tech, Repair & Maintenance"
+
+- id: cccccccc-cccc-cccc-cccc-cccccccccccc
+  name: "Food & Agriculture"
+  slug: "food-agriculture"
+  parent_id: null
+  level: 1
+  display_order: 12
+  is_active: true
+  description: "Fresh & Preserved Food, Farm Produce"
+
+- id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  name: "Pets & Animals"
+  slug: "pets-animals"
+  parent_id: null
+  level: 1
+  display_order: 13
+  is_active: true
+  description: "Pet Accessories, Food, Animals"
+
+# Level 2 - Mobility
+- id: eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee
+  name: "Cars"
+  slug: "cars"
   parent_id: 11111111-1111-1111-1111-111111111111
   level: 2
   display_order: 1
   is_active: true
-  description: "Mobile Phones, Tablets"
+  description: "Used & New Cars"
 
-- id: 99999999-9999-9999-9999-999999999999
-  name: "Furniture"
-  slug: "furniture"
+- id: ffffffff-ffff-ffff-ffff-ffffffffffff
+  name: "Motorbikes"
+  slug: "motorbikes"
   parent_id: 11111111-1111-1111-1111-111111111111
   level: 2
   display_order: 2
   is_active: true
-  description: "Home & Office Furniture"
+  description: "Motorcycles & Scooters"
 
-- id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-  name: "Home Appliances"
-  slug: "home-appliances"
+- id: 00000000-0000-0000-0000-000000000001
+  name: "Bicycles"
+  slug: "bicycles"
+  parent_id: 11111111-1111-1111-1111-111111111111
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Bikes & Cycling Gear"
+
+# Level 2 - Real Estate
+- id: 00000000-0000-0000-0000-000000000002
+  name: "Rentals"
+  slug: "rentals"
   parent_id: 22222222-2222-2222-2222-222222222222
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Properties for Rent"
+
+- id: 00000000-0000-0000-0000-000000000003
+  name: "Properties for Sale"
+  slug: "properties-for-sale"
+  parent_id: 22222222-2222-2222-2222-222222222222
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "Properties for Purchase"
+
+# Level 3 - Rentals
+- id: 00000000-0000-0000-0000-000000000004
+  name: "Houses"
+  slug: "houses-rent"
+  parent_id: 00000000-0000-0000-0000-000000000002
+  level: 3
+  display_order: 1
+  is_active: true
+  description: "Residential Houses for Rent"
+
+- id: 00000000-0000-0000-0000-000000000005
+  name: "Apartments"
+  slug: "apartments-rent"
+  parent_id: 00000000-0000-0000-0000-000000000002
+  level: 3
+  display_order: 2
+  is_active: true
+  description: "Flats & Apartments for Rent"
+
+- id: 00000000-0000-0000-0000-000000000006
+  name: "Hostels"
+  slug: "hostels-rent"
+  parent_id: 00000000-0000-0000-0000-000000000002
+  level: 3
+  display_order: 3
+  is_active: true
+  description: "Student Hostels"
+
+- id: 00000000-0000-0000-0000-000000000007
+  name: "Offices"
+  slug: "offices-rent"
+  parent_id: 00000000-0000-0000-0000-000000000002
+  level: 3
+  display_order: 4
+  is_active: true
+  description: "Commercial Office Space"
+
+- id: 00000000-0000-0000-0000-000000000008
+  name: "Shops"
+  slug: "shops-rent"
+  parent_id: 00000000-0000-0000-0000-000000000002
+  level: 3
+  display_order: 5
+  is_active: true
+  description: "Retail Shops for Rent"
+
+# Level 3 - Properties for Sale
+- id: 00000000-0000-0000-0000-000000000009
+  name: "Houses"
+  slug: "houses-sale"
+  parent_id: 00000000-0000-0000-0000-000000000003
+  level: 3
+  display_order: 1
+  is_active: true
+  description: "Houses for Sale"
+
+- id: 00000000-0000-0000-0000-000000000010
+  name: "Buildings"
+  slug: "buildings-sale"
+  parent_id: 00000000-0000-0000-0000-000000000003
+  level: 3
+  display_order: 2
+  is_active: true
+  description: "Commercial Buildings"
+
+- id: 00000000-0000-0000-0000-000000000011
+  name: "Apartments"
+  slug: "apartments-sale"
+  parent_id: 00000000-0000-0000-0000-000000000003
+  level: 3
+  display_order: 3
+  is_active: true
+  description: "Apartments for Sale"
+
+- id: 00000000-0000-0000-0000-000000000012
+  name: "Shops"
+  slug: "shops-sale"
+  parent_id: 00000000-0000-0000-0000-000000000003
+  level: 3
+  display_order: 4
+  is_active: true
+  description: "Shops for Sale"
+
+# Level 2 - Mobile Devices
+- id: 00000000-0000-0000-0000-000000000013
+  name: "Smartphones"
+  slug: "smartphones"
+  parent_id: 33333333-3333-3333-3333-333333333333
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "iPhone, Samsung, Tecno, Infinix"
+
+- id: 00000000-0000-0000-0000-000000000014
+  name: "Tablets"
+  slug: "tablets"
+  parent_id: 33333333-3333-3333-3333-333333333333
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "iPads, Samsung Tabs, Huawei"
+
+- id: 00000000-0000-0000-0000-000000000015
+  name: "Mobile Accessories"
+  slug: "mobile-accessories"
+  parent_id: 33333333-3333-3333-3333-333333333333
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Cases, Chargers, Screen Protectors"
+
+- id: 00000000-0000-0000-0000-000000000016
+  name: "Smartwatches"
+  slug: "smartwatches"
+  parent_id: 33333333-3333-3333-3333-333333333333
+  level: 2
+  display_order: 4
+  is_active: true
+  description: "Apple Watch, Samsung Watch, Fitbit"
+
+# Level 2 - Computing & Electronics
+- id: 00000000-0000-0000-0000-000000000017
+  name: "Laptops"
+  slug: "laptops"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "MacBooks, Dell, HP, Lenovo"
+
+- id: 00000000-0000-0000-0000-000000000018
+  name: "Desktop Computers"
+  slug: "desktops"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "PCs & All-in-Ones"
+
+- id: 00000000-0000-0000-0000-000000000019
+  name: "Monitors"
+  slug: "monitors"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Gaming & Professional Monitors"
+
+- id: 00000000-0000-0000-0000-000000000020
+  name: "Computer Components"
+  slug: "computer-components"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 4
+  is_active: true
+  description: "RAM, SSD, GPU, Motherboards"
+
+- id: 00000000-0000-0000-0000-000000000021
+  name: "Computer Accessories"
+  slug: "computer-accessories"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 5
+  is_active: true
+  description: "Keyboards, Mice, Headsets"
+
+- id: 00000000-0000-0000-0000-000000000022
+  name: "System Units"
+  slug: "system-units"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 6
+  is_active: true
+  description: "Pre-built & Custom PCs"
+
+- id: 00000000-0000-0000-0000-000000000023
+  name: "Televisions"
+  slug: "televisions"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 7
+  is_active: true
+  description: "LED, OLED, Smart TVs"
+
+- id: 00000000-0000-0000-0000-000000000024
+  name: "Audio Equipment"
+  slug: "audio-equipment"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 8
+  is_active: true
+  description: "Speakers, Soundbars, Amplifiers"
+
+- id: 00000000-0000-0000-0000-000000000025
+  name: "Headphones"
+  slug: "headphones"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 9
+  is_active: true
+  description: "Wireless & Wired Headphones"
+
+- id: 00000000-0000-0000-0000-000000000026
+  name: "Cameras"
+  slug: "cameras"
+  parent_id: 44444444-4444-4444-4444-444444444444
+  level: 2
+  display_order: 10
+  is_active: true
+  description: "DSLR, Mirrorless, Action Cameras"
+
+# Level 2 - Games
+- id: 00000000-0000-0000-0000-000000000027
+  name: "Video Games"
+  slug: "video-games"
+  parent_id: 55555555-5555-5555-5555-555555555555
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "PS5, Xbox, PC, Nintendo Games"
+
+- id: 00000000-0000-0000-0000-000000000028
+  name: "Consoles & Controllers"
+  slug: "consoles"
+  parent_id: 55555555-5555-5555-5555-555555555555
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "PS5, Xbox Series X, Switch"
+
+- id: 00000000-0000-0000-0000-000000000029
+  name: "Board & Card Games"
+  slug: "board-games"
+  parent_id: 55555555-5555-5555-5555-555555555555
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Monopoly, Chess, Poker"
+
+# Level 2 - Home & Living
+- id: 00000000-0000-0000-0000-000000000030
+  name: "Furniture"
+  slug: "furniture"
+  parent_id: 66666666-6666-6666-6666-666666666666
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Sofas, Beds, Tables, Chairs"
+
+- id: 00000000-0000-0000-0000-000000000031
+  name: "Lighting"
+  slug: "lighting"
+  parent_id: 66666666-6666-6666-6666-666666666666
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "Lamps, Chandeliers, Bulbs"
+
+- id: 00000000-0000-0000-0000-000000000032
+  name: "Appliances"
+  slug: "appliances"
+  parent_id: 66666666-6666-6666-6666-666666666666
   level: 2
   display_order: 3
   is_active: true
   description: "Kitchen & Home Appliances"
 
-- id: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
-  name: "Jewelries"
-  slug: "jewelries"
-  parent_id: 22222222-2222-2222-2222-222222222222
+- id: 00000000-0000-0000-0000-000000000033
+  name: "Cookware"
+  slug: "cookware"
+  parent_id: 66666666-6666-6666-6666-666666666666
   level: 2
   display_order: 4
   is_active: true
-  description: "Rings, Necklaces & More"
+  description: "Pots, Pans, Utensils"
 
-- id: cccccccc-cccc-cccc-cccc-cccccccccccc
-  name: "Property"
-  slug: "property"
-  parent_id: 33333333-3333-3333-3333-333333333333
-  level: 2
-  display_order: 5
-  is_active: true
-  description: "Houses & Real Estate"
-
-- id: dddddddd-dddd-dddd-dddd-dddddddddddd
-  name: "Services"
-  slug: "services"
-  parent_id: 33333333-3333-3333-3333-333333333333
-  level: 2
-  display_order: 6
-  is_active: true
-  description: "Professional Services"
-
-# Level 3 Categories
-- id: eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee
-  name: "iPhone"
-  slug: "iphone"
-  parent_id: 88888888-8888-8888-8888-888888888888
+# Level 3 - Appliances
+- id: 00000000-0000-0000-0000-000000000034
+  name: "Kitchen Appliances"
+  slug: "kitchen-appliances"
+  parent_id: 00000000-0000-0000-0000-000000000032
   level: 3
   display_order: 1
   is_active: true
-  description: "Apple iPhones"
+  description: "Microwaves, Blenders, Fridges"
 
-- id: ffffffff-ffff-ffff-ffff-ffffffffffff
-  name: "Samsung"
-  slug: "samsung"
-  parent_id: 88888888-8888-8888-8888-888888888888
+- id: 00000000-0000-0000-0000-000000000035
+  name: "Home Appliances"
+  slug: "home-appliances"
+  parent_id: 00000000-0000-0000-0000-000000000032
   level: 3
   display_order: 2
   is_active: true
-  description: "Samsung Galaxy Phones"
+  description: "Washers, Dryers, Vacuum Cleaners"
 
-- id: 00000000-0000-0000-0000-000000000001
-  name: "Tecno"
-  slug: "tecno"
-  parent_id: 88888888-8888-8888-8888-888888888888
+# Level 2 - Fashion & Style
+- id: 00000000-0000-0000-0000-000000000036
+  name: "Men"
+  slug: "men-fashion"
+  parent_id: 77777777-7777-7777-7777-777777777777
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Men's Clothing, Footwear, Accessories"
+
+- id: 00000000-0000-0000-0000-000000000037
+  name: "Women"
+  slug: "women-fashion"
+  parent_id: 77777777-7777-7777-7777-777777777777
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "Women's Clothing, Footwear, Accessories"
+
+- id: 00000000-0000-0000-0000-000000000038
+  name: "Kids"
+  slug: "kids-fashion"
+  parent_id: 77777777-7777-7777-7777-777777777777
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Children's Fashion (5-12 years)"
+
+- id: 00000000-0000-0000-0000-000000000039
+  name: "Babies"
+  slug: "babies-fashion"
+  parent_id: 77777777-7777-7777-7777-777777777777
+  level: 2
+  display_order: 4
+  is_active: true
+  description: "Baby Fashion (0-4 years)"
+
+# Level 3 - Men
+- id: 00000000-0000-0000-0000-000000000040
+  name: "Clothing"
+  slug: "men-clothing"
+  parent_id: 00000000-0000-0000-0000-000000000036
+  level: 3
+  display_order: 1
+  is_active: true
+  description: "Shirts, Pants, Jackets"
+
+- id: 00000000-0000-0000-0000-000000000041
+  name: "Footwear"
+  slug: "men-footwear"
+  parent_id: 00000000-0000-0000-0000-000000000036
+  level: 3
+  display_order: 2
+  is_active: true
+  description: "Shoes, Sneakers, Sandals"
+
+- id: 00000000-0000-0000-0000-000000000042
+  name: "Accessories"
+  slug: "men-accessories"
+  parent_id: 00000000-0000-0000-0000-000000000036
   level: 3
   display_order: 3
   is_active: true
-  description: "Tecno Mobile Phones"
+  description: "Bags, Belts, Hats"
 
-- id: 00000000-0000-0000-0000-000000000002
-  name: "Infinix"
-  slug: "infinix"
+# Level 3 - Women
+- id: 00000000-0000-0000-0000-000000000043
+  name: "Clothing"
+  slug: "women-clothing"
+  parent_id: 00000000-0000-0000-0000-000000000037
+  level: 3
+  display_order: 1
+  is_active: true
+  description: "Dresses, Tops, Skirts"
+
+- id: 00000000-0000-0000-0000-000000000044
+  name: "Footwear"
+  slug: "women-footwear"
+  parent_id: 00000000-0000-0000-0000-000000000037
+  level: 3
+  display_order: 2
+  is_active: true
+  description: "Heels, Flats, Boots"
+
+- id: 00000000-0000-0000-0000-000000000045
+  name: "Accessories"
+  slug: "women-accessories"
+  parent_id: 00000000-0000-0000-0000-000000000037
+  level: 3
+  display_order: 3
+  is_active: true
+  description: "Bags, Scarves, Belts"
+
+# Level 3 - Kids
+- id: 00000000-0000-0000-0000-000000000046
+  name: "Clothing"
+  slug: "kids-clothing"
+  parent_id: 00000000-0000-0000-0000-000000000038
+  level: 3
+  display_order: 1
+  is_active: true
+  description: "Kids Apparel"
+
+- id: 00000000-0000-0000-0000-000000000047
+  name: "Footwear"
+  slug: "kids-footwear"
+  parent_id: 00000000-0000-0000-0000-000000000038
+  level: 3
+  display_order: 2
+  is_active: true
+  description: "Kids Shoes"
+
+- id: 00000000-0000-0000-0000-000000000048
+  name: "Accessories"
+  slug: "kids-accessories"
+  parent_id: 00000000-0000-0000-0000-000000000038
+  level: 3
+  display_order: 3
+  is_active: true
+  description: "Kids Bags, Hats"
+
+# Level 3 - Babies
+- id: 00000000-0000-0000-0000-000000000049
+  name: "Clothing"
+  slug: "babies-clothing"
+  parent_id: 00000000-0000-0000-0000-000000000039
+  level: 3
+  display_order: 1
+  is_active: true
+  description: "Baby Onesies, Sleepwear"
+
+- id: 00000000-0000-0000-0000-000000000050
+  name: "Footwear"
+  slug: "babies-footwear"
+  parent_id: 00000000-0000-0000-0000-000000000039
+  level: 3
+  display_order: 2
+  is_active: true
+  description: "Baby Shoes"
+
+- id: 00000000-0000-0000-0000-000000000051
+  name: "Accessories"
+  slug: "babies-accessories"
+  parent_id: 00000000-0000-0000-0000-000000000039
+  level: 3
+  display_order: 3
+  is_active: true
+  description: "Baby Bibs, Hats"
+
+# Level 2 - Jewelry
+- id: 00000000-0000-0000-0000-000000000052
+  name: "Men"
+  slug: "men-jewelry"
   parent_id: 88888888-8888-8888-8888-888888888888
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Men's Jewelry"
+
+- id: 00000000-0000-0000-0000-000000000053
+  name: "Women"
+  slug: "women-jewelry"
+  parent_id: 88888888-8888-8888-8888-888888888888
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "Women's Jewelry"
+
+# Level 3 - Men Jewelry
+- id: 00000000-0000-0000-0000-000000000054
+  name: "Rings & Earrings"
+  slug: "men-rings-earrings"
+  parent_id: 00000000-0000-0000-0000-000000000052
+  level: 3
+  display_order: 1
+  is_active: true
+  description: "Men's Rings & Earrings"
+
+- id: 00000000-0000-0000-0000-000000000055
+  name: "Watches"
+  slug: "men-watches"
+  parent_id: 00000000-0000-0000-0000-000000000052
+  level: 3
+  display_order: 2
+  is_active: true
+  description: "Men's Watches"
+
+- id: 00000000-0000-0000-0000-000000000056
+  name: "Necklaces"
+  slug: "men-necklaces"
+  parent_id: 00000000-0000-0000-0000-000000000052
+  level: 3
+  display_order: 3
+  is_active: true
+  description: "Men's Necklaces"
+
+- id: 00000000-0000-0000-0000-000000000057
+  name: "Bracelets"
+  slug: "men-bracelets"
+  parent_id: 00000000-0000-0000-0000-000000000052
   level: 3
   display_order: 4
   is_active: true
-  description: "Infinix Mobile Phones"
+  description: "Men's Bracelets"
+
+- id: 00000000-0000-0000-0000-000000000058
+  name: "Cufflinks"
+  slug: "cufflinks"
+  parent_id: 00000000-0000-0000-0000-000000000052
+  level: 3
+  display_order: 5
+  is_active: true
+  description: "Cufflinks"
+
+# Level 3 - Women Jewelry
+- id: 00000000-0000-0000-0000-000000000059
+  name: "Rings & Earrings"
+  slug: "women-rings-earrings"
+  parent_id: 00000000-0000-0000-0000-000000000053
+  level: 3
+  display_order: 1
+  is_active: true
+  description: "Women's Rings & Earrings"
+
+- id: 00000000-0000-0000-0000-000000000060
+  name: "Watches"
+  slug: "women-watches"
+  parent_id: 00000000-0000-0000-0000-000000000053
+  level: 3
+  display_order: 2
+  is_active: true
+  description: "Women's Watches"
+
+- id: 00000000-0000-0000-0000-000000000061
+  name: "Necklaces"
+  slug: "women-necklaces"
+  parent_id: 00000000-0000-0000-0000-000000000053
+  level: 3
+  display_order: 3
+  is_active: true
+  description: "Women's Necklaces"
+
+- id: 00000000-0000-0000-0000-000000000062
+  name: "Beads"
+  slug: "beads"
+  parent_id: 00000000-0000-0000-0000-000000000053
+  level: 3
+  display_order: 4
+  is_active: true
+  description: "Beaded Jewelry"
+
+- id: 00000000-0000-0000-0000-000000000063
+  name: "Bracelets & Bangles"
+  slug: "bracelets-bangles"
+  parent_id: 00000000-0000-0000-0000-000000000053
+  level: 3
+  display_order: 5
+  is_active: true
+  description: "Bracelets & Bangles"
+
+- id: 00000000-0000-0000-0000-000000000064
+  name: "Anklets"
+  slug: "anklets"
+  parent_id: 00000000-0000-0000-0000-000000000053
+  level: 3
+  display_order: 6
+  is_active: true
+  description: "Anklets"
+
+# Level 2 - Beauty & Personal Care
+- id: 00000000-0000-0000-0000-000000000065
+  name: "Hair & Oral Care"
+  slug: "hair-oral-care"
+  parent_id: 99999999-9999-9999-9999-999999999999
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Shampoo, Conditioner, Toothpaste"
+
+- id: 00000000-0000-0000-0000-000000000066
+  name: "Skincare"
+  slug: "skincare"
+  parent_id: 99999999-9999-9999-9999-999999999999
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "Moisturizers, Serums, Cleansers"
+
+- id: 00000000-0000-0000-0000-000000000067
+  name: "Fragrances"
+  slug: "fragrances"
+  parent_id: 99999999-9999-9999-9999-999999999999
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Perfumes, Colognes"
+
+- id: 00000000-0000-0000-0000-000000000068
+  name: "Makeup"
+  slug: "makeup"
+  parent_id: 99999999-9999-9999-9999-999999999999
+  level: 2
+  display_order: 4
+  is_active: true
+  description: "Foundation, Lipstick, Mascara"
+
+- id: 00000000-0000-0000-0000-000000000069
+  name: "Intimate Wellness"
+  slug: "intimate-wellness"
+  parent_id: 99999999-9999-9999-9999-999999999999
+  level: 2
+  display_order: 5
+  is_active: true
+  description: "Personal Care Products"
+
+- id: 00000000-0000-0000-0000-000000000070
+  name: "Beauty Accessories"
+  slug: "beauty-accessories"
+  parent_id: 99999999-9999-9999-9999-999999999999
+  level: 2
+  display_order: 6
+  is_active: true
+  description: "Brushes, Mirrors, Tools"
+
+# Level 2 - Baby & Kids
+- id: 00000000-0000-0000-0000-000000000071
+  name: "Fashion"
+  slug: "baby-fashion"
+  parent_id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Baby & Kids Clothing"
+
+- id: 00000000-0000-0000-0000-000000000072
+  name: "Games & Toys"
+  slug: "toys"
+  parent_id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "Educational & Fun Toys"
+
+- id: 00000000-0000-0000-0000-000000000073
+  name: "Baby Food & Nutrition"
+  slug: "baby-food"
+  parent_id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Formula, Baby Cereal"
+
+- id: 00000000-0000-0000-0000-000000000074
+  name: "Baby Accessories"
+  slug: "baby-accessories"
+  parent_id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  level: 2
+  display_order: 4
+  is_active: true
+  description: "Diapers, Wipes, Bottles"
+
+- id: 00000000-0000-0000-0000-000000000075
+  name: "Playground & Outdoor"
+  slug: "playground"
+  parent_id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  level: 2
+  display_order: 5
+  is_active: true
+  description: "Swings, Slides, Outdoor Toys"
+
+# Level 2 - Services
+- id: 00000000-0000-0000-0000-000000000076
+  name: "Home Services"
+  slug: "home-services"
+  parent_id: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Cleaning, Plumbing, Electrical"
+
+- id: 00000000-0000-0000-0000-000000000077
+  name: "Tech Services"
+  slug: "tech-services"
+  parent_id: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "IT Support, Web Development"
+
+- id: 00000000-0000-0000-0000-000000000078
+  name: "Repair & Maintenance"
+  slug: "repair-services"
+  parent_id: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Phone, Computer, Appliance Repair"
+
+- id: 00000000-0000-0000-0000-000000000079
+  name: "Other Services"
+  slug: "other-services"
+  parent_id: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+  level: 2
+  display_order: 4
+  is_active: true
+  description: "Consulting, Tutoring, Events"
+
+# Level 2 - Food & Agriculture
+- id: 00000000-0000-0000-0000-000000000080
+  name: "Preserved Food"
+  slug: "preserved-food"
+  parent_id: cccccccc-cccc-cccc-cccc-cccccccccccc
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Canned, Dried, Packaged"
+
+- id: 00000000-0000-0000-0000-000000000081
+  name: "Fresh Food"
+  slug: "fresh-food"
+  parent_id: cccccccc-cccc-cccc-cccc-cccccccccccc
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "Fruits, Vegetables, Meat"
+
+- id: 00000000-0000-0000-0000-000000000082
+  name: "Farm Produce"
+  slug: "farm-produce"
+  parent_id: cccccccc-cccc-cccc-cccc-cccccccccccc
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Crops, Livestock, Eggs"
+
+- id: 00000000-0000-0000-0000-000000000083
+  name: "Agricultural Supplies"
+  slug: "agri-supplies"
+  parent_id: cccccccc-cccc-cccc-cccc-cccccccccccc
+  level: 2
+  display_order: 4
+  is_active: true
+  description: "Fertilizers, Tools, Equipment"
+
+# Level 2 - Pets & Animals
+- id: 00000000-0000-0000-0000-000000000084
+  name: "Pet Accessories"
+  slug: "pet-accessories"
+  parent_id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  level: 2
+  display_order: 1
+  is_active: true
+  description: "Collars, Beds, Carriers"
+
+- id: 00000000-0000-0000-0000-000000000085
+  name: "Pet Food & Feed"
+  slug: "pet-food"
+  parent_id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  level: 2
+  display_order: 2
+  is_active: true
+  description: "Dog, Cat, Bird Food"
+
+- id: 00000000-0000-0000-0000-000000000086
+  name: "Cats"
+  slug: "cats"
+  parent_id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  level: 2
+  display_order: 3
+  is_active: true
+  description: "Cats for Sale"
+
+- id: 00000000-0000-0000-0000-000000000087
+  name: "Dogs"
+  slug: "dogs"
+  parent_id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  level: 2
+  display_order: 4
+  is_active: true
+  description: "Dogs for Sale"
+
+- id: 00000000-0000-0000-0000-000000000088
+  name: "Fish"
+  slug: "fish"
+  parent_id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  level: 2
+  display_order: 5
+  is_active: true
+  description: "Aquarium Fish"
+
+- id: 00000000-0000-0000-0000-000000000089
+  name: "Birds"
+  slug: "birds"
+  parent_id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  level: 2
+  display_order: 6
+  is_active: true
+  description: "Parrots, Finches, Chickens"
+
+- id: 00000000-0000-0000-0000-000000000090
+  name: "Rabbits"
+  slug: "rabbits"
+  parent_id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  level: 2
+  display_order: 7
+  is_active: true
+  description: "Rabbits for Sale"
+
+- id: 00000000-0000-0000-0000-000000000091
+  name: "Other Animals"
+  slug: "other-animals"
+  parent_id: dddddddd-dddd-dddd-dddd-dddddddddddd
+  level: 2
+  display_order: 8
+  is_active: true
+  description: "Hamsters, Guinea Pigs, Reptiles"

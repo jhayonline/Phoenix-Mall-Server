@@ -3,7 +3,9 @@
 pub mod prelude;
 
 pub mod categories;
+pub mod conversations;
 pub mod favorites;
+pub mod messages;
 pub mod order_items;
 pub mod orders;
 pub mod product_images;

@@ -7,5 +7,8 @@ pub mod product;
 pub mod profile;
 pub mod wishlist;
 
-
 pub mod admin;
+
+
+
+pub mod chat;

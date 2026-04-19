@@ -53,6 +53,7 @@ impl Hooks for App {
 
     fn routes(_ctx: &AppContext) -> AppRoutes {
         AppRoutes::with_default_routes() // controller routes below
+            .add_route(controllers::chat::routes())
             .add_route(controllers::admin::routes())
             .add_route(controllers::wishlist::routes())
             .add_route(controllers::images::routes())
