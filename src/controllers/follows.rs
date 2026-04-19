@@ -229,7 +229,7 @@ pub async fn get_followers(
         .all(&ctx.db)
         .await?;
 
-    let mut follower_ids: Vec<i32> = followers_list.iter().map(|f| f.follower_id).collect();
+    let follower_ids: Vec<i32> = followers_list.iter().map(|f| f.follower_id).collect();
 
     let followers_users = if !follower_ids.is_empty() {
         users::Entity::find()
@@ -267,7 +267,7 @@ pub async fn get_following(
         .all(&ctx.db)
         .await?;
 
-    let mut following_ids: Vec<i32> = following_list.iter().map(|f| f.following_id).collect();
+    let following_ids: Vec<i32> = following_list.iter().map(|f| f.following_id).collect();
 
     let following_users = if !following_ids.is_empty() {
         users::Entity::find()

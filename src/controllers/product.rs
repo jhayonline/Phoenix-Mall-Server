@@ -1,12 +1,12 @@
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
-use crate::models::_entities::products::Column;
+use crate::models::_entities::products;
 use crate::models::_entities::{favorites, follows, notifications, product_reviews};
 use crate::{
     models::{
         _entities::users,
-        products::{self, CreateProductParams, ProductQueryParams, UpdateProductParams},
+        products::{CreateProductParams, ProductQueryParams, UpdateProductParams},
     },
     views::products::ProductResponse,
 };
@@ -31,6 +31,40 @@ pub async fn list(
     );
 
     format::json(paginated)
+}
+
+// Get seller info by ID (for product detail page)
+#[debug_handler]
+pub async fn get_seller(
+    State(ctx): State<AppContext>,
+    Path(seller_id): Path<i32>,
+) -> Result<Response> {
+    let user = users::Entity::find_by_id(seller_id)
+        .one(&ctx.db)
+        .await?
+        .ok_or_else(|| Error::NotFound)?;
+
+    let product_count = products::Entity::find()
+        .filter(products::Column::SellerId.eq(user.id))
+        .filter(products::Column::Status.eq("active"))
+        .count(&ctx.db)
+        .await?;
+
+    format::json(serde_json::json!({
+        "id": user.id,
+        "pid": user.pid,
+        "name": user.name,
+        "username": user.username,
+        "avatar_url": user.avatar_url,
+        "location": user.location,
+        "bio": user.bio,
+        "phone_number": user.phone_number,
+        "whatsapp_enabled": user.whatsapp_enabled,
+        "phone_enabled": user.phone_enabled,
+        "follower_count": user.follower_count.unwrap_or(0),
+        "following_count": user.following_count.unwrap_or(0),
+        "product_count": product_count,
+    }))
 }
 
 // Get single product by pid (public)
@@ -270,11 +304,11 @@ pub async fn search_suggestions(
     let pattern = format!("%{}%", search_term);
 
     let suggestions = products::Entity::find()
-        .filter(Column::Status.eq("active"))
+        .filter(products::Column::Status.eq("active"))
         .filter(
             Condition::any()
-                .add(Column::Title.like(&pattern))
-                .add(Column::Description.like(&pattern)),
+                .add(products::Column::Title.like(&pattern))
+                .add(products::Column::Description.like(&pattern)),
         )
         .limit(10)
         .all(&ctx.db)
@@ -296,4 +330,5 @@ pub fn routes() -> Routes {
         .add("/delete/{pid}", delete(delete_product))
         .add("/{pid}/mark-sold", post(mark_sold))
         .add("/search/suggestions", get(search_suggestions))
+        .add("/seller/{seller_id}", get(get_seller))
 }
