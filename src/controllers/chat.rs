@@ -1,9 +1,9 @@
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
-use crate::models::_entities::{users, conversations, messages};
+use crate::models::_entities::{conversations, messages, users};
 use loco_rs::prelude::*;
-use sea_orm::{Condition, QueryOrder, PaginatorTrait};
+use sea_orm::{Condition, PaginatorTrait, QueryOrder};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -44,13 +44,15 @@ pub async fn send_message(
     Json(params): Json<SendMessageParams>,
 ) -> Result<Response> {
     let sender = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
-    
+
     // Find or create conversation
-    let conversation = find_or_create_conversation(&ctx.db, sender.id, params.receiver_id, params.product_id).await?;
-    
+    let conversation =
+        find_or_create_conversation(&ctx.db, sender.id, params.receiver_id, params.product_id)
+            .await?;
+
     // Clone message for later use
     let message_text = params.message.clone();
-    
+
     // Create message
     let new_message = messages::ActiveModel {
         id: ActiveValue::set(Uuid::new_v4()),
@@ -61,16 +63,16 @@ pub async fn send_message(
         read: ActiveValue::set(Some(false)),
         created_at: ActiveValue::set(Some(chrono::Utc::now().into())),
     };
-    
+
     let saved_message = new_message.insert(&ctx.db).await?;
-    
+
     // Update conversation's last message
     let mut conv_active: conversations::ActiveModel = conversation.into();
     conv_active.last_message = ActiveValue::set(Some(message_text));
     conv_active.last_message_time = ActiveValue::set(Some(chrono::Utc::now().into()));
     conv_active.updated_at = ActiveValue::set(Some(chrono::Utc::now().into()));
     conv_active.update(&ctx.db).await?;
-    
+
     format::json(MessageResponse {
         id: saved_message.id,
         conversation_id: saved_message.conversation_id,
@@ -84,34 +86,37 @@ pub async fn send_message(
 
 // Get user's conversations
 #[debug_handler]
-pub async fn get_conversations(
-    auth: auth::JWT,
-    State(ctx): State<AppContext>,
-) -> Result<Response> {
+pub async fn get_conversations(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
-    
+
     let convs = conversations::Entity::find()
         .filter(
             Condition::any()
                 .add(conversations::Column::BuyerId.eq(user.id))
-                .add(conversations::Column::SellerId.eq(user.id))
+                .add(conversations::Column::SellerId.eq(user.id)),
         )
         .order_by_desc(conversations::Column::UpdatedAt)
         .all(&ctx.db)
         .await?;
-    
+
     let mut responses = Vec::new();
     for conv in convs {
-        let other_user_id = if conv.buyer_id == user.id { conv.seller_id } else { conv.buyer_id };
-        let other_user = users::Entity::find_by_id(other_user_id).one(&ctx.db).await?;
-        
+        let other_user_id = if conv.buyer_id == user.id {
+            conv.seller_id
+        } else {
+            conv.buyer_id
+        };
+        let other_user = users::Entity::find_by_id(other_user_id)
+            .one(&ctx.db)
+            .await?;
+
         let unread_count = messages::Entity::find()
             .filter(messages::Column::ConversationId.eq(&conv.id))
             .filter(messages::Column::ReceiverId.eq(user.id))
             .filter(messages::Column::Read.eq(false))
             .count(&ctx.db)
             .await?;
-        
+
         if let Some(other) = other_user {
             responses.push(ConversationResponse {
                 id: conv.id,
@@ -119,12 +124,15 @@ pub async fn get_conversations(
                 other_user_name: other.name,
                 other_user_avatar: other.avatar_url,
                 last_message: conv.last_message.unwrap_or_default(),
-                last_message_time: conv.last_message_time.unwrap_or_else(|| chrono::Utc::now().into()).to_string(),
+                last_message_time: conv
+                    .last_message_time
+                    .unwrap_or_else(|| chrono::Utc::now().into())
+                    .to_string(),
                 unread_count,
             });
         }
     }
-    
+
     format::json(responses)
 }
 
@@ -136,23 +144,23 @@ pub async fn get_messages(
     Path(conversation_id): Path<String>,
 ) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
-    
+
     // Verify user is part of this conversation
     let conversation = conversations::Entity::find_by_id(&conversation_id)
         .one(&ctx.db)
         .await?
         .ok_or_else(|| Error::NotFound)?;
-    
+
     if conversation.buyer_id != user.id && conversation.seller_id != user.id {
         return unauthorized("You are not part of this conversation");
     }
-    
+
     let msgs = messages::Entity::find()
         .filter(messages::Column::ConversationId.eq(&conversation_id))
         .order_by_asc(messages::Column::CreatedAt)
         .all(&ctx.db)
         .await?;
-    
+
     // Mark messages as read
     for msg in &msgs {
         if msg.receiver_id == user.id && msg.read == Some(false) {
@@ -161,7 +169,7 @@ pub async fn get_messages(
             let _ = active_msg.update(&ctx.db).await;
         }
     }
-    
+
     let message_responses: Vec<MessageResponse> = msgs
         .into_iter()
         .map(|msg| MessageResponse {
@@ -174,7 +182,7 @@ pub async fn get_messages(
             created_at: msg.created_at.unwrap().to_string(),
         })
         .collect();
-    
+
     format::json(message_responses)
 }
 
@@ -191,17 +199,17 @@ async fn find_or_create_conversation(
                 .add(
                     Condition::all()
                         .add(conversations::Column::BuyerId.eq(buyer_id))
-                        .add(conversations::Column::SellerId.eq(seller_id))
+                        .add(conversations::Column::SellerId.eq(seller_id)),
                 )
                 .add(
                     Condition::all()
                         .add(conversations::Column::BuyerId.eq(seller_id))
-                        .add(conversations::Column::SellerId.eq(buyer_id))
-                )
+                        .add(conversations::Column::SellerId.eq(buyer_id)),
+                ),
         )
         .one(db)
         .await?;
-    
+
     if let Some(conv) = existing {
         Ok(conv)
     } else {
@@ -219,10 +227,25 @@ async fn find_or_create_conversation(
     }
 }
 
+// Get total unread messages count for the user
+#[debug_handler]
+pub async fn get_unread_count(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
+    let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
+
+    let unread_count = messages::Entity::find()
+        .filter(messages::Column::ReceiverId.eq(user.id))
+        .filter(messages::Column::Read.eq(false))
+        .count(&ctx.db)
+        .await?;
+
+    format::json(serde_json::json!({ "total": unread_count }))
+}
+
 pub fn routes() -> Routes {
     Routes::new()
         .prefix("api/chat")
         .add("/send", post(send_message))
         .add("/conversations", get(get_conversations))
         .add("/messages/{conversation_id}", get(get_messages))
+        .add("/unread-count", get(get_unread_count))
 }
