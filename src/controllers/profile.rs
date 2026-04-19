@@ -32,6 +32,12 @@ pub async fn update_profile(
     if let Some(name) = params.name {
         user_active.name = ActiveValue::set(name);
     }
+    if let Some(username) = params.username {
+        user_active.username = ActiveValue::set(Some(username));
+    }
+    if let Some(bio) = params.bio {
+        user_active.bio = ActiveValue::set(Some(bio));
+    }
     if let Some(phone_number) = params.phone_number {
         user_active.phone_number = ActiveValue::set(Some(phone_number));
     }

@@ -6,6 +6,8 @@ pub struct ProfileResponse {
     pub pid: String,
     pub name: String,
     pub email: String,
+    pub username: Option<String>,
+    pub bio: Option<String>,
     pub phone_number: Option<String>,
     pub avatar_url: Option<String>,
     pub location: Option<String>,
@@ -13,6 +15,9 @@ pub struct ProfileResponse {
     pub phone_enabled: Option<bool>,
     pub is_active: Option<bool>,
     pub email_verified: bool,
+    pub follower_count: i32,
+    pub following_count: i32,
+    pub role: Option<String>,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 
@@ -23,6 +28,8 @@ impl ProfileResponse {
             pid: user.pid.to_string(),
             name: user.name.clone(),
             email: user.email.clone(),
+            username: user.username.clone(),
+            bio: user.bio.clone(),
             phone_number: user.phone_number.clone(),
             avatar_url: user.avatar_url.clone(),
             location: user.location.clone(),
@@ -30,6 +37,9 @@ impl ProfileResponse {
             phone_enabled: user.phone_enabled,
             is_active: user.is_active,
             email_verified: user.email_verified_at.is_some(),
+            follower_count: user.follower_count.unwrap_or(0),
+            following_count: user.following_count.unwrap_or(0),
+            role: user.role.clone(),
             created_at: user.created_at,
         }
     }

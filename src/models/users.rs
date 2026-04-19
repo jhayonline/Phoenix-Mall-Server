@@ -28,6 +28,8 @@ pub struct RegisterParams {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UpdateProfileParams {
     pub name: Option<String>,
+    pub username: Option<String>,
+    pub bio: Option<String>,
     pub phone_number: Option<String>,
     pub location: Option<String>,
     pub avatar_url: Option<String>,

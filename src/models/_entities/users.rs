@@ -32,12 +32,20 @@ pub struct Model {
     pub role: Option<String>,
     pub is_active: Option<bool>,
     pub last_active: Option<DateTimeWithTimeZone>,
+    #[sea_orm(unique)]
+    pub username: Option<String>,
+    #[sea_orm(column_type = "Text", nullable)]
+    pub bio: Option<String>,
+    pub follower_count: Option<i32>,
+    pub following_count: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(has_many = "super::favorites::Entity")]
     Favorites,
+    #[sea_orm(has_many = "super::notifications::Entity")]
+    Notifications,
     #[sea_orm(has_many = "super::orders::Entity")]
     Orders,
     #[sea_orm(has_many = "super::product_reviews::Entity")]
@@ -51,6 +59,12 @@ pub enum Relation {
 impl Related<super::favorites::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Favorites.def()
+    }
+}
+
+impl Related<super::notifications::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Notifications.def()
     }
 }
 

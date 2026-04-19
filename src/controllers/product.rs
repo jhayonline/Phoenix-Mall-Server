@@ -2,7 +2,7 @@
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
 use crate::models::_entities::products::Column;
-use crate::models::_entities::{favorites, product_reviews};
+use crate::models::_entities::{favorites, follows, notifications, product_reviews};
 use crate::{
     models::{
         _entities::users,
@@ -14,6 +14,7 @@ use loco_rs::prelude::*;
 use nanoid::nanoid;
 use num_traits::cast::FromPrimitive;
 use sea_orm::{Condition, PaginatorTrait, QuerySelect};
+use uuid::Uuid;
 
 // List all products with pagination, filters, and search
 #[debug_handler]
@@ -66,7 +67,7 @@ pub async fn get_by_pid(
     let mut active_product: products::ActiveModel = product.clone().into();
     let current_views = product.views_count.unwrap_or(0);
     active_product.views_count = ActiveValue::set(Some(current_views + 1));
-    active_product.update(&ctx.db).await?;
+    let _ = active_product.update(&ctx.db).await;
 
     format::json(serde_json::json!({
         "id": product.id,
@@ -123,6 +124,34 @@ pub async fn create(
     }
     .insert(&ctx.db)
     .await?;
+
+    // Notify followers about new product
+    let followers_list = follows::Entity::find()
+        .filter(follows::Column::FollowingId.eq(user.id))
+        .all(&ctx.db)
+        .await?;
+
+    for follower in followers_list {
+        let notification_data = serde_json::json!({
+            "product_id": product.id,
+            "product_pid": product.pid,
+            "product_title": product.title,
+            "seller_id": user.id,
+            "seller_name": user.name,
+        });
+
+        let notification = notifications::ActiveModel {
+            id: ActiveValue::set(Uuid::new_v4()),
+            user_id: ActiveValue::set(follower.follower_id),
+            r#type: ActiveValue::set("new_product".to_string()),
+            title: ActiveValue::set(format!("{} posted a new product", user.name)),
+            message: ActiveValue::set(format!("Check out \"{}\"", product.title)),
+            data: ActiveValue::set(Some(notification_data)),
+            read: ActiveValue::set(Some(false)),
+            created_at: ActiveValue::set(Some(chrono::Utc::now().into())),
+        };
+        let _ = notification.insert(&ctx.db).await;
+    }
 
     format::json(ProductResponse::new(&product))
 }
@@ -251,7 +280,6 @@ pub async fn search_suggestions(
         .all(&ctx.db)
         .await?;
 
-    // Extract unique titles for suggestions
     let mut unique_titles: Vec<String> = suggestions.into_iter().map(|p| p.title).collect();
     unique_titles.dedup();
 

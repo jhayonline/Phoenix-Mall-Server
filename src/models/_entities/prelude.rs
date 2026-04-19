@@ -3,7 +3,9 @@
 pub use super::categories::Entity as Categories;
 pub use super::conversations::Entity as Conversations;
 pub use super::favorites::Entity as Favorites;
+pub use super::follows::Entity as Follows;
 pub use super::messages::Entity as Messages;
+pub use super::notifications::Entity as Notifications;
 pub use super::order_items::Entity as OrderItems;
 pub use super::orders::Entity as Orders;
 pub use super::product_images::Entity as ProductImages;

@@ -9,3 +9,5 @@ pub mod order_items;
 pub mod orders;
 pub mod conversations;
 pub mod messages;
+pub mod follows;
+pub mod notifications;
