@@ -2,6 +2,7 @@
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
 use crate::models::_entities::categories::{self, Entity as Categories};
+use crate::views::category_response::CategoryResponse;
 use loco_rs::prelude::*;
 use sea_orm::{PaginatorTrait, QueryOrder};
 use serde::{Deserialize, Serialize};
@@ -28,6 +29,14 @@ pub struct UpdateCategoryParams {
 }
 
 // Public endpoints (no auth required)
+#[utoipa::path(
+    get,
+    path = "/api/categories/list",
+    responses(
+        (status = 200, description = "List of categories", body = Vec<CategoryResponse>)
+    ),
+    tag = "categories"
+)]
 #[debug_handler]
 pub async fn list(State(ctx): State<AppContext>) -> Result<Response> {
     let categories = Categories::find()
@@ -36,7 +45,12 @@ pub async fn list(State(ctx): State<AppContext>) -> Result<Response> {
         .all(&ctx.db)
         .await?;
 
-    format::json(categories)
+    let response: Vec<CategoryResponse> = categories
+        .iter()
+        .map(|cat| CategoryResponse::from_model(cat))
+        .collect();
+
+    format::json(response)
 }
 
 #[debug_handler]
@@ -50,7 +64,7 @@ pub async fn get_by_slug(
         .await?
         .ok_or_else(|| Error::NotFound)?;
 
-    format::json(category)
+    format::json(CategoryResponse::from_model(&category))
 }
 
 #[debug_handler]
@@ -143,7 +157,7 @@ pub async fn create(
     .insert(&ctx.db)
     .await?;
 
-    format::json(category)
+    format::json(CategoryResponse::from_model(&category))
 }
 
 #[debug_handler]
@@ -198,7 +212,7 @@ pub async fn update(
     }
 
     let updated = active_category.update(&ctx.db).await?;
-    format::json(updated)
+    format::json(CategoryResponse::from_model(&updated))
 }
 
 #[debug_handler]

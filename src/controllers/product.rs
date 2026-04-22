@@ -6,7 +6,9 @@ use crate::models::_entities::{favorites, follows, notifications, product_review
 use crate::{
     models::{
         _entities::users,
-        products::{CreateProductParams, ProductQueryParams, UpdateProductParams},
+        products::{
+            CreateProductParams, PaginatedProductsResponse, ProductQueryParams, UpdateProductParams,
+        },
     },
     views::product_response::ProductResponse,
 };
@@ -17,6 +19,16 @@ use sea_orm::{Condition, PaginatorTrait, QuerySelect};
 use uuid::Uuid;
 
 // List all products with pagination, filters, and search
+#[utoipa::path(
+    get,
+    path = "/api/products/list",
+    params(ProductQueryParams),
+    responses(
+        (status = 200, description = "List of products", body = PaginatedProductsResponse),
+        (status = 400, description = "Invalid query parameters")
+    ),
+    tag = "products"
+)]
 #[debug_handler]
 pub async fn list(
     State(ctx): State<AppContext>,
@@ -68,6 +80,18 @@ pub async fn get_seller(
 }
 
 // Get single product by pid (public)
+#[utoipa::path(
+    get,
+    path = "/api/products/get/{pid}",
+    params(
+        ("pid" = String, Path, description = "Product public ID")
+    ),
+    responses(
+        (status = 200, description = "Product found", body = ProductResponse),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "products"
+)]
 #[debug_handler]
 pub async fn get_by_pid(
     State(ctx): State<AppContext>,

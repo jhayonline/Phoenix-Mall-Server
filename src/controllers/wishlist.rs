@@ -14,7 +14,7 @@ pub struct AddToWishlistParams {
     pub product_pid: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct WishlistResponse {
     pub product_id: Uuid,
     pub product_pid: String,
@@ -26,6 +26,16 @@ pub struct WishlistResponse {
 }
 
 // Get user's wishlist
+#[utoipa::path(
+    get,
+    path = "/api/wishlist",
+    security(("bearer_auth" = [])),
+    responses(
+        (status = 200, description = "Wishlist items", body = Vec<WishlistResponse>),
+        (status = 401, description = "Unauthorized")
+    ),
+    tag = "wishlist"
+)]
 #[debug_handler]
 pub async fn get_wishlist(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
@@ -57,6 +67,19 @@ pub async fn get_wishlist(auth: auth::JWT, State(ctx): State<AppContext>) -> Res
 }
 
 // Add item to wishlist
+#[utoipa::path(
+    post,
+    path = "/api/wishlist",
+    security(("bearer_auth" = [])),
+    request_body = AddToWishlistParams,
+    responses(
+        (status = 200, description = "Added to wishlist"),
+        (status = 400, description = "Already in wishlist"),
+        (status = 401, description = "Unauthorized"),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "wishlist"
+)]
 #[debug_handler]
 pub async fn add_to_wishlist(
     auth: auth::JWT,
@@ -96,6 +119,20 @@ pub async fn add_to_wishlist(
 }
 
 // Remove item from wishlist
+#[utoipa::path(
+    delete,
+    path = "/api/wishlist/{pid}",
+    security(("bearer_auth" = [])),
+    params(
+        ("pid" = String, Path, description = "Product PID")
+    ),
+    responses(
+        (status = 200, description = "Removed from wishlist"),
+        (status = 401, description = "Unauthorized"),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "wishlist"
+)]
 #[debug_handler]
 pub async fn remove_from_wishlist(
     auth: auth::JWT,
@@ -120,6 +157,16 @@ pub async fn remove_from_wishlist(
 }
 
 // Clear entire wishlist
+#[utoipa::path(
+    delete,
+    path = "/api/wishlist/clear",
+    security(("bearer_auth" = [])),
+    responses(
+        (status = 200, description = "Wishlist cleared"),
+        (status = 401, description = "Unauthorized")
+    ),
+    tag = "wishlist"
+)]
 #[debug_handler]
 pub async fn clear_wishlist(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;

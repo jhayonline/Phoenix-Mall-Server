@@ -1,7 +1,7 @@
 use sea_orm::entity::prelude::*;
 use sea_orm::{QueryOrder, QuerySelect};
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use utoipa::{IntoParams, ToSchema};
 use uuid::Uuid;
 
 pub use super::_entities::products::{ActiveModel, Entity, Model};
@@ -35,7 +35,8 @@ pub struct UpdateProductParams {
     pub phone_contact: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Default, ToSchema)]
+#[derive(Debug, Deserialize, Default, ToSchema, IntoParams)]
+#[into_params(parameter_in = Query)]
 pub struct ProductQueryParams {
     pub page: Option<u64>,
     pub limit: Option<u64>,

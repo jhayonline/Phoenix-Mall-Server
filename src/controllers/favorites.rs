@@ -1,10 +1,28 @@
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
-use crate::models::_entities::{favorites, products, users};
+use crate::{
+    models::_entities::{favorites, products, users},
+    views::product_response::ProductResponse,
+};
 use loco_rs::prelude::*;
 use sea_orm::{EntityTrait, QueryOrder};
 
+#[utoipa::path(
+    post,
+    path = "/api/favorites/{pid}",
+    security(("bearer_auth" = [])),
+    params(
+        ("pid" = String, Path, description = "Product PID")
+    ),
+    responses(
+        (status = 200, description = "Added to favorites"),
+        (status = 400, description = "Already in favorites"),
+        (status = 401, description = "Unauthorized"),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "favorites"
+)]
 #[debug_handler]
 pub async fn add(
     auth: auth::JWT,
@@ -40,6 +58,20 @@ pub async fn add(
     format::json(favorite)
 }
 
+#[utoipa::path(
+    delete,
+    path = "/api/favorites/{pid}",
+    security(("bearer_auth" = [])),
+    params(
+        ("pid" = String, Path, description = "Product PID")
+    ),
+    responses(
+        (status = 200, description = "Removed from favorites"),
+        (status = 401, description = "Unauthorized"),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "favorites"
+)]
 #[debug_handler]
 pub async fn remove(
     auth: auth::JWT,
@@ -63,6 +95,16 @@ pub async fn remove(
     format::empty_json()
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/favorites",
+    security(("bearer_auth" = [])),
+    responses(
+        (status = 200, description = "List of favorites", body = Vec<ProductResponse>),
+        (status = 401, description = "Unauthorized")
+    ),
+    tag = "favorites"
+)]
 #[debug_handler]
 pub async fn list(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
@@ -82,6 +124,20 @@ pub async fn list(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Resp
     format::json(products_with_favorite)
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/favorites/{pid}/check",
+    security(("bearer_auth" = [])),
+    params(
+        ("pid" = String, Path, description = "Product PID")
+    ),
+    responses(
+        (status = 200, description = "Check if favorited", body = serde_json::Value),
+        (status = 401, description = "Unauthorized"),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "favorites"
+)]
 #[debug_handler]
 pub async fn is_favorited(
     auth: auth::JWT,

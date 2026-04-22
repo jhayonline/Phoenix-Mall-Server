@@ -12,6 +12,16 @@ use loco_rs::prelude::*;
 use sea_orm::{ColumnTrait, PaginatorTrait, QueryOrder, QuerySelect};
 
 // Get current user profile
+#[utoipa::path(
+    get,
+    path = "/api/profile/me",
+    security(("bearer_auth" = [])),
+    responses(
+        (status = 200, description = "User profile", body = ProfileResponse),
+        (status = 401, description = "Unauthorized")
+    ),
+    tag = "profile"
+)]
 #[debug_handler]
 pub async fn get_profile(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
@@ -19,6 +29,18 @@ pub async fn get_profile(auth: auth::JWT, State(ctx): State<AppContext>) -> Resu
 }
 
 // Update current user profile
+#[utoipa::path(
+    put,
+    path = "/api/profile/me",
+    security(("bearer_auth" = [])),
+    request_body = UpdateProfileParams,
+    responses(
+        (status = 200, description = "Profile updated", body = ProfileResponse),
+        (status = 401, description = "Unauthorized"),
+        (status = 400, description = "Invalid input")
+    ),
+    tag = "profile"
+)]
 #[debug_handler]
 pub async fn update_profile(
     auth: auth::JWT,
@@ -142,6 +164,18 @@ pub async fn seller_products(auth: auth::JWT, State(ctx): State<AppContext>) -> 
 }
 
 // Add this function to handle avatar upload
+#[utoipa::path(
+    post,
+    path = "/api/profile/avatar",
+    security(("bearer_auth" = [])),
+    request_body(),
+    responses(
+        (status = 200, description = "Avatar uploaded", body = serde_json::Value),
+        (status = 401, description = "Unauthorized"),
+        (status = 400, description = "Invalid file")
+    ),
+    tag = "profile"
+)]
 #[debug_handler]
 pub async fn upload_avatar(
     auth: auth::JWT,

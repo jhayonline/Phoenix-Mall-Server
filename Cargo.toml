@@ -46,6 +46,7 @@ utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 utoipa-redoc = "6.0.0"
 utoipa-rapidoc = "6.0.0"
 utoipa-axum = "0.2.0"
+rust_decimal = "1.41.0"
 
 [[bin]]
 name = "phoenix_server-cli"

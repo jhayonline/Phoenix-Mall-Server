@@ -15,7 +15,7 @@ pub struct SendMessageParams {
     pub product_id: Option<Uuid>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct MessageResponse {
     pub id: Uuid,
     pub conversation_id: String,
@@ -26,7 +26,7 @@ pub struct MessageResponse {
     pub created_at: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct ConversationResponse {
     pub id: String,
     pub other_user_id: i32,
@@ -38,6 +38,18 @@ pub struct ConversationResponse {
 }
 
 // Send a message
+#[utoipa::path(
+    post,
+    path = "/api/chat/send",
+    security(("bearer_auth" = [])),
+    request_body = SendMessageParams,
+    responses(
+        (status = 200, description = "Message sent", body = MessageResponse),
+        (status = 401, description = "Unauthorized"),
+        (status = 404, description = "User not found")
+    ),
+    tag = "chat"
+)]
 #[debug_handler]
 pub async fn send_message(
     auth: auth::JWT,
@@ -86,6 +98,16 @@ pub async fn send_message(
 }
 
 // Get user's conversations
+#[utoipa::path(
+    get,
+    path = "/api/chat/conversations",
+    security(("bearer_auth" = [])),
+    responses(
+        (status = 200, description = "List of conversations", body = Vec<ConversationResponse>),
+        (status = 401, description = "Unauthorized")
+    ),
+    tag = "chat"
+)]
 #[debug_handler]
 pub async fn get_conversations(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
@@ -138,6 +160,21 @@ pub async fn get_conversations(auth: auth::JWT, State(ctx): State<AppContext>) -
 }
 
 // Get messages for a conversation
+#[utoipa::path(
+    get,
+    path = "/api/chat/messages/{conversation_id}",
+    security(("bearer_auth" = [])),
+    params(
+        ("conversation_id" = String, Path, description = "Conversation ID")
+    ),
+    responses(
+        (status = 200, description = "List of messages", body = Vec<MessageResponse>),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Not part of conversation"),
+        (status = 404, description = "Conversation not found")
+    ),
+    tag = "chat"
+)]
 #[debug_handler]
 pub async fn get_messages(
     auth: auth::JWT,
@@ -229,6 +266,16 @@ async fn find_or_create_conversation(
 }
 
 // Get total unread messages count for the user
+#[utoipa::path(
+    get,
+    path = "/api/chat/unread-count",
+    security(("bearer_auth" = [])),
+    responses(
+        (status = 200, description = "Unread count", body = serde_json::Value),
+        (status = 401, description = "Unauthorized")
+    ),
+    tag = "chat"
+)]
 #[debug_handler]
 pub async fn get_unread_count(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;

@@ -13,7 +13,7 @@ pub struct FollowParams {
     pub user_id: i32,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct UserProfileResponse {
     pub id: i32,
     pub pid: String,
@@ -30,7 +30,7 @@ pub struct UserProfileResponse {
     pub created_at: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct FollowUserResponse {
     pub id: String,
     pub follower_id: i32,
@@ -39,6 +39,19 @@ pub struct FollowUserResponse {
 }
 
 // Follow a user
+#[utoipa::path(
+    post,
+    path = "/api/follows/follow",
+    security(("bearer_auth" = [])),
+    request_body = FollowParams,
+    responses(
+        (status = 200, description = "User followed", body = FollowUserResponse),
+        (status = 400, description = "Cannot follow self or already following"),
+        (status = 401, description = "Unauthorized"),
+        (status = 404, description = "User not found")
+    ),
+    tag = "follows"
+)]
 #[debug_handler]
 pub async fn follow_user(
     auth: auth::JWT,
@@ -100,6 +113,20 @@ pub async fn follow_user(
 }
 
 // Unfollow a user
+#[utoipa::path(
+    delete,
+    path = "/api/follows/unfollow/{user_id}",
+    security(("bearer_auth" = [])),
+    params(
+        ("user_id" = i32, Path, description = "User ID to unfollow")
+    ),
+    responses(
+        (status = 200, description = "User unfollowed"),
+        (status = 401, description = "Unauthorized"),
+        (status = 404, description = "Follow relationship not found")
+    ),
+    tag = "follows"
+)]
 #[debug_handler]
 pub async fn unfollow_user(
     auth: auth::JWT,
@@ -162,6 +189,18 @@ pub async fn check_following(
 }
 
 // Get user profile by username (no auth required)
+#[utoipa::path(
+    get,
+    path = "/api/follows/profile/{username}",
+    params(
+        ("username" = String, Path, description = "Username")
+    ),
+    responses(
+        (status = 200, description = "User profile", body = UserProfileResponse),
+        (status = 404, description = "User not found")
+    ),
+    tag = "follows"
+)]
 #[debug_handler]
 pub async fn get_user_profile(
     State(ctx): State<AppContext>,

@@ -1,7 +1,8 @@
 use crate::models::_entities::users;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct ProfileResponse {
     pub pid: String,
     pub name: String,
@@ -45,7 +46,7 @@ impl ProfileResponse {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct UserStatsResponse {
     pub total_listings: u64,
     pub active_listings: u64,

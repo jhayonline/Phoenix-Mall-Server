@@ -1,5 +1,6 @@
 use crate::models::_entities::products;
 use chrono::{DateTime, FixedOffset};
+use num_traits::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -33,7 +34,7 @@ impl ProductResponse {
             pid: product.pid.clone(),
             title: product.title.clone(),
             description: product.description.clone(),
-            price: product.price.to_string().parse::<f64>().unwrap_or(0.0),
+            price: product.price.to_f64().unwrap_or(0.0),
             condition: product.condition.clone(),
             location: product.location.clone(),
             category_id: product.category_id,

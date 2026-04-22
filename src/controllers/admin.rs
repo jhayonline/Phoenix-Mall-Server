@@ -2,6 +2,8 @@
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
 use crate::models::_entities::{products, users};
+use crate::views::product_response::ProductResponse;
+use crate::views::user_response::UserResponse;
 use loco_rs::prelude::*;
 use sea_orm::{EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 use serde::{Deserialize, Serialize};
@@ -18,7 +20,26 @@ pub struct UpdateUserRoleParams {
     pub role: String,
 }
 
+#[derive(Debug, Serialize, ToSchema)]
+pub struct StatsResponse {
+    pub total_users: u64,
+    pub total_products: u64,
+    pub active_products: u64,
+    pub sold_products: u64,
+}
+
 // Get platform stats
+#[utoipa::path(
+    get,
+    path = "/api/admin/stats",
+    security(("bearer_auth" = [])),
+    responses(
+        (status = 200, description = "Platform statistics", body = StatsResponse),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Admin access required")
+    ),
+    tag = "admin"
+)]
 #[debug_handler]
 pub async fn get_stats(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     // Verify admin role
@@ -47,6 +68,17 @@ pub async fn get_stats(auth: auth::JWT, State(ctx): State<AppContext>) -> Result
 }
 
 // Get all users (admin only)
+#[utoipa::path(
+    get,
+    path = "/api/admin/users",
+    security(("bearer_auth" = [])),
+    responses(
+        (status = 200, description = "List of all users", body = Vec<UserResponse>),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Admin access required")
+    ),
+    tag = "admin"
+)]
 #[debug_handler]
 pub async fn list_users(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let admin = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
@@ -63,6 +95,22 @@ pub async fn list_users(auth: auth::JWT, State(ctx): State<AppContext>) -> Resul
 }
 
 // Update user status (suspend/activate)
+#[utoipa::path(
+    put,
+    path = "/api/admin/users/{id}/status",
+    security(("bearer_auth" = [])),
+    params(
+        ("id" = i32, Path, description = "User ID")
+    ),
+    request_body = UpdateUserStatusParams,
+    responses(
+        (status = 200, description = "User status updated"),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Admin access required"),
+        (status = 404, description = "User not found")
+    ),
+    tag = "admin"
+)]
 #[debug_handler]
 pub async fn update_user_status(
     auth: auth::JWT,
@@ -89,6 +137,22 @@ pub async fn update_user_status(
 }
 
 // Update user role
+#[utoipa::path(
+    put,
+    path = "/api/admin/users/{id}/role",
+    security(("bearer_auth" = [])),
+    params(
+        ("id" = i32, Path, description = "User ID")
+    ),
+    request_body = UpdateUserRoleParams,
+    responses(
+        (status = 200, description = "User role updated"),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Admin access required"),
+        (status = 404, description = "User not found")
+    ),
+    tag = "admin"
+)]
 #[debug_handler]
 pub async fn update_user_role(
     auth: auth::JWT,
@@ -115,6 +179,21 @@ pub async fn update_user_role(
 }
 
 // Delete user
+#[utoipa::path(
+    delete,
+    path = "/api/admin/users/{id}",
+    security(("bearer_auth" = [])),
+    params(
+        ("id" = i32, Path, description = "User ID")
+    ),
+    responses(
+        (status = 200, description = "User deleted"),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Admin access required"),
+        (status = 404, description = "User not found")
+    ),
+    tag = "admin"
+)]
 #[debug_handler]
 pub async fn delete_user(
     auth: auth::JWT,
@@ -137,6 +216,17 @@ pub async fn delete_user(
 }
 
 // Get all products (admin only)
+#[utoipa::path(
+    get,
+    path = "/api/admin/products",
+    security(("bearer_auth" = [])),
+    responses(
+        (status = 200, description = "List of all products", body = Vec<ProductResponse>),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Admin access required")
+    ),
+    tag = "admin"
+)]
 #[debug_handler]
 pub async fn list_products(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let admin = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
@@ -149,10 +239,30 @@ pub async fn list_products(auth: auth::JWT, State(ctx): State<AppContext>) -> Re
         .all(&ctx.db)
         .await?;
 
-    format::json(all_products)
+    let response: Vec<ProductResponse> = all_products
+        .iter()
+        .map(|p| ProductResponse::from_model(p))
+        .collect();
+
+    format::json(response)
 }
 
 // Delete product (admin only)
+#[utoipa::path(
+    delete,
+    path = "/api/admin/products/{id}",
+    security(("bearer_auth" = [])),
+    params(
+        ("id" = String, Path, description = "Product UUID")
+    ),
+    responses(
+        (status = 200, description = "Product deleted"),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Admin access required"),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "admin"
+)]
 #[debug_handler]
 pub async fn delete_product(
     auth: auth::JWT,

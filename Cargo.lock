@@ -3041,6 +3041,7 @@ dependencies = [
  "num-traits",
  "regex",
  "rstest",
+ "rust_decimal",
  "sea-orm",
  "serde",
  "serde_json",
