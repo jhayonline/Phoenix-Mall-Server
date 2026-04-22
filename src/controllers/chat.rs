@@ -5,9 +5,10 @@ use crate::models::_entities::{conversations, messages, users};
 use loco_rs::prelude::*;
 use sea_orm::{Condition, PaginatorTrait, QueryOrder};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct SendMessageParams {
     pub receiver_id: i32,
     pub message: String,

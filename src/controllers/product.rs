@@ -8,7 +8,7 @@ use crate::{
         _entities::users,
         products::{CreateProductParams, ProductQueryParams, UpdateProductParams},
     },
-    views::products::ProductResponse,
+    views::product_response::ProductResponse,
 };
 use loco_rs::prelude::*;
 use nanoid::nanoid;
@@ -187,7 +187,7 @@ pub async fn create(
         let _ = notification.insert(&ctx.db).await;
     }
 
-    format::json(ProductResponse::new(&product))
+    format::json(ProductResponse::from_model(&product))
 }
 
 // Update product (seller only)
@@ -241,7 +241,7 @@ pub async fn update(
     }
 
     let updated_product = product_active.update(&ctx.db).await?;
-    format::json(ProductResponse::new(&updated_product))
+    format::json(ProductResponse::from_model(&updated_product))
 }
 
 // Delete product (seller only)
@@ -286,7 +286,7 @@ pub async fn mark_sold(
     product_active.status = ActiveValue::set(Some("sold".to_string()));
     let updated_product = product_active.update(&ctx.db).await?;
 
-    format::json(ProductResponse::new(&updated_product))
+    format::json(ProductResponse::from_model(&updated_product))
 }
 
 // Get search suggestions (autocomplete)

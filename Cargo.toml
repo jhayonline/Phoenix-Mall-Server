@@ -41,6 +41,11 @@ futures-util = "0.3"
 lazy_static = "1.5.0"
 tokio-tungstenite = "0.21"
 ws = "0.9.2"
+utoipa = { version = "5.4.0", features = ["uuid", "chrono", "decimal", "time"] }
+utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
+utoipa-redoc = "6.0.0"
+utoipa-rapidoc = "6.0.0"
+utoipa-axum = "0.2.0"
 
 [[bin]]
 name = "phoenix_server-cli"

@@ -6,9 +6,10 @@ use loco_rs::prelude::*;
 use num_traits::cast::ToPrimitive;
 use sea_orm::{EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct AddToWishlistParams {
     pub product_pid: String,
 }

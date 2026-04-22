@@ -1,14 +1,16 @@
 use sea_orm::entity::prelude::*;
 use sea_orm::{QueryOrder, QuerySelect};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 pub use super::_entities::products::{ActiveModel, Entity, Model};
 pub type Products = Entity;
 
 use crate::models::_entities::categories;
+use crate::views::product_response::ProductResponse;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct CreateProductParams {
     pub title: String,
     pub description: Option<String>,
@@ -20,7 +22,7 @@ pub struct CreateProductParams {
     pub phone_contact: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct UpdateProductParams {
     pub title: Option<String>,
     pub description: Option<String>,
@@ -33,7 +35,7 @@ pub struct UpdateProductParams {
     pub phone_contact: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize, Default, ToSchema)]
 pub struct ProductQueryParams {
     pub page: Option<u64>,
     pub limit: Option<u64>,
@@ -46,9 +48,9 @@ pub struct ProductQueryParams {
     pub search: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct PaginatedProductsResponse {
-    pub items: Vec<Model>,
+    pub items: Vec<ProductResponse>,
     pub total: u64,
     pub page: u64,
     pub per_page: u64,
@@ -158,8 +160,13 @@ impl Entity {
 
         let total_pages = (total as f64 / per_page as f64).ceil() as u64;
 
+        let response_items: Vec<ProductResponse> = items
+            .iter()
+            .map(|item| ProductResponse::from_model(item))
+            .collect();
+
         Ok(PaginatedProductsResponse {
-            items,
+            items: response_items,
             total,
             page,
             per_page,

@@ -5,9 +5,10 @@ use crate::models::_entities::categories::{self, Entity as Categories};
 use loco_rs::prelude::*;
 use sea_orm::{PaginatorTrait, QueryOrder};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct CreateCategoryParams {
     pub name: String,
     pub slug: String,
@@ -16,7 +17,7 @@ pub struct CreateCategoryParams {
     pub display_order: Option<i32>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct UpdateCategoryParams {
     pub name: Option<String>,
     pub slug: Option<String>,

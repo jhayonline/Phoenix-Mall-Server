@@ -12,7 +12,10 @@ use loco_rs::{
 };
 use migration::Migrator;
 use std::path::Path;
+use tower_http::services::ServeDir;
+use utoipa_swagger_ui::SwaggerUi;
 
+use crate::openapi::ApiDoc;
 #[allow(unused_imports)]
 use crate::{
     controllers,
@@ -20,9 +23,9 @@ use crate::{
     tasks,
     workers::downloader::DownloadWorker,
 };
-use tower_http::services::ServeDir;
 
 pub struct App;
+
 #[async_trait]
 impl Hooks for App {
     fn app_name() -> &'static str {
@@ -52,7 +55,7 @@ impl Hooks for App {
     }
 
     fn routes(_ctx: &AppContext) -> AppRoutes {
-        AppRoutes::with_default_routes() // controller routes below
+        AppRoutes::with_default_routes()
             .add_route(controllers::follows::routes())
             .add_route(controllers::chat::routes())
             .add_route(controllers::admin::routes())
@@ -64,13 +67,16 @@ impl Hooks for App {
             .add_route(controllers::categories::routes())
             .add_route(controllers::auth::routes())
     }
+
     async fn connect_workers(ctx: &AppContext, queue: &Queue) -> Result<()> {
         queue.register(DownloadWorker::build(ctx)).await?;
         Ok(())
     }
 
     async fn after_routes(router: axum::Router, _ctx: &AppContext) -> Result<axum::Router> {
-        let router = router.nest_service("/uploads", ServeDir::new("storage/uploads"));
+        let router = router
+            .nest_service("/uploads", ServeDir::new("storage/uploads"))
+            .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()));
         Ok(router)
     }
 
@@ -78,10 +84,12 @@ impl Hooks for App {
     fn register_tasks(tasks: &mut Tasks) {
         // tasks-inject (do not remove)
     }
+
     async fn truncate(ctx: &AppContext) -> Result<()> {
         truncate_table(&ctx.db, users::Entity).await?;
         Ok(())
     }
+
     async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
         db::seed::<users::ActiveModel>(&ctx.db, &base.join("users.yaml").display().to_string())
             .await?;

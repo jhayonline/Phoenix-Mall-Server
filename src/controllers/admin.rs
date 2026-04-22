@@ -5,14 +5,15 @@ use crate::models::_entities::{products, users};
 use loco_rs::prelude::*;
 use sea_orm::{EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct UpdateUserStatusParams {
     pub is_active: bool,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct UpdateUserRoleParams {
     pub role: String,
 }
