@@ -38,6 +38,8 @@ pub struct Model {
     pub bio: Option<String>,
     pub follower_count: Option<i32>,
     pub following_count: Option<i32>,
+    pub last_seen: Option<DateTimeWithTimeZone>,
+    pub is_online: Option<bool>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

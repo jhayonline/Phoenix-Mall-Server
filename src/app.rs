@@ -21,7 +21,7 @@ use crate::{
     controllers,
     models::_entities::{categories, users},
     tasks,
-    workers::downloader::DownloadWorker,
+    workers::{downloader::DownloadWorker, offline_checker::OfflineCheckerWorker},
 };
 
 pub struct App;
@@ -56,6 +56,7 @@ impl Hooks for App {
 
     fn routes(_ctx: &AppContext) -> AppRoutes {
         AppRoutes::with_default_routes()
+            .add_route(controllers::online_status::routes())
             .add_route(controllers::follows::routes())
             .add_route(controllers::chat::routes())
             .add_route(controllers::admin::routes())
@@ -70,6 +71,7 @@ impl Hooks for App {
 
     async fn connect_workers(ctx: &AppContext, queue: &Queue) -> Result<()> {
         queue.register(DownloadWorker::build(ctx)).await?;
+        queue.register(OfflineCheckerWorker::build(ctx)).await?;
         Ok(())
     }
 
@@ -102,3 +104,4 @@ impl Hooks for App {
         Ok(())
     }
 }
+

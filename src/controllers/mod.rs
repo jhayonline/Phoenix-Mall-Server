@@ -14,3 +14,4 @@ pub mod chat;
 
 
 pub mod follows;
+pub mod online_status;

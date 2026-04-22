@@ -179,6 +179,7 @@ async fn login(State(ctx): State<AppContext>, Json(params): Json<LoginParams>) -
 
     format::json(serde_json::json!({
         "token": token,
+        "id": user.id,
         "pid": user.pid,
         "name": user.name,
         "is_verified": user.email_verified_at.is_some(),
