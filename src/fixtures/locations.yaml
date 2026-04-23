@@ -1,0 +1,139 @@
+regions:
+  - name: "Greater Accra"
+    display_order: 1
+    towns:
+      - "Accra Central"
+      - "Airport Residential"
+      - "Achimota"
+      - "Adabraka"
+      - "Cantonments"
+      - "Dzorwulu"
+      - "East Legon"
+      - "Kanda"
+      - "Kokomlemle"
+      - "Labone"
+      - "Lapaz"
+      - "Madina"
+      - "Osu"
+      - "Ring Road Central"
+      - "Roman Ridge"
+      - "Spintex"
+      - "Tema"
+      - "Teshie"
+      - "Nungua"
+
+  - name: "Ashanti"
+    display_order: 2
+    towns:
+      - "Kumasi Central"
+      - "Adum"
+      - "Asafo"
+      - "Asokwa"
+      - "Bantama"
+      - "Bekwai"
+      - "Mampong"
+      - "Obuasi"
+      - "Suame"
+      - "Tafo"
+
+  - name: "Western"
+    display_order: 3
+    towns:
+      - "Sekondi"
+      - "Takoradi"
+      - "Axim"
+      - "Effia"
+      - "Kwesimintsim"
+      - "Shama"
+
+  - name: "Central"
+    display_order: 4
+    towns:
+      - "Cape Coast"
+      - "Winneba"
+      - "Kasoa"
+      - "Mankessim"
+      - "Elmina"
+
+  - name: "Eastern"
+    display_order: 5
+    towns:
+      - "Koforidua"
+      - "Nkawkaw"
+      - "Akim Oda"
+      - "Suhum"
+      - "Nsawam"
+
+  - name: "Northern"
+    display_order: 6
+    towns:
+      - "Tamale"
+      - "Yendi"
+      - "Savelugu"
+      - "Bimbilla"
+
+  - name: "Volta"
+    display_order: 7
+    towns:
+      - "Ho"
+      - "Hohoe"
+      - "Keta"
+      - "Kpando"
+
+  - name: "Upper East"
+    display_order: 8
+    towns:
+      - "Bolgatanga"
+      - "Navrongo"
+      - "Bawku"
+
+  - name: "Upper West"
+    display_order: 9
+    towns:
+      - "Wa"
+      - "Jirapa"
+      - "Lawra"
+
+  - name: "Bono"
+    display_order: 10
+    towns:
+      - "Sunyani"
+      - "Techiman"
+      - "Berekum"
+
+  - name: "Ahafo"
+    display_order: 11
+    towns:
+      - "Goaso"
+      - "Kenyasi"
+
+  - name: "Bono East"
+    display_order: 12
+    towns:
+      - "Techiman"
+      - "Kintampo"
+      - "Atebubu"
+
+  - name: "Oti"
+    display_order: 13
+    towns:
+      - "Dambai"
+      - "Krachi"
+
+  - name: "North East"
+    display_order: 14
+    towns:
+      - "Nalerigu"
+      - "Gambaga"
+
+  - name: "Savannah"
+    display_order: 15
+    towns:
+      - "Damongo"
+      - "Sawla"
+
+  - name: "Western North"
+    display_order: 16
+    towns:
+      - "Sefwi Wiawso"
+      - "Bibiani"

@@ -29,6 +29,11 @@ pub struct Model {
     pub average_rating: Option<f64>,
     pub total_reviews: Option<i32>,
     pub wishlist_count: Option<i32>,
+    pub region_id: Option<Uuid>,
+    pub town_id: Option<Uuid>,
+    pub negotiation: Option<String>,
+    pub promotion_type: Option<String>,
+    pub promotion_expires_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -49,8 +54,26 @@ pub enum Relation {
     ProductImages,
     #[sea_orm(has_many = "super::product_reviews::Entity")]
     ProductReviews,
+    #[sea_orm(has_many = "super::product_specs::Entity")]
+    ProductSpecs,
     #[sea_orm(has_many = "super::product_views::Entity")]
     ProductViews,
+    #[sea_orm(
+        belongs_to = "super::regions::Entity",
+        from = "Column::RegionId",
+        to = "super::regions::Column::Id",
+        on_update = "NoAction",
+        on_delete = "SetNull"
+    )]
+    Regions,
+    #[sea_orm(
+        belongs_to = "super::towns::Entity",
+        from = "Column::TownId",
+        to = "super::towns::Column::Id",
+        on_update = "NoAction",
+        on_delete = "SetNull"
+    )]
+    Towns,
     #[sea_orm(
         belongs_to = "super::users::Entity",
         from = "Column::SellerId",
@@ -91,9 +114,27 @@ impl Related<super::product_reviews::Entity> for Entity {
     }
 }
 
+impl Related<super::product_specs::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ProductSpecs.def()
+    }
+}
+
 impl Related<super::product_views::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::ProductViews.def()
+    }
+}
+
+impl Related<super::regions::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Regions.def()
+    }
+}
+
+impl Related<super::towns::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Towns.def()
     }
 }
 

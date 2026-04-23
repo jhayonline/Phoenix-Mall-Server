@@ -4,45 +4,38 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
-#[sea_orm(table_name = "categories")]
+#[sea_orm(table_name = "towns")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
+    pub region_id: Uuid,
     pub name: String,
-    #[sea_orm(unique)]
-    pub slug: String,
-    pub parent_id: Option<Uuid>,
-    pub level: i32,
     pub display_order: Option<i32>,
-    pub is_active: Option<bool>,
     pub created_at: Option<DateTimeWithTimeZone>,
-    pub description: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::products::Entity")]
+    Products,
     #[sea_orm(
-        belongs_to = "Entity",
-        from = "Column::ParentId",
-        to = "Column::Id",
+        belongs_to = "super::regions::Entity",
+        from = "Column::RegionId",
+        to = "super::regions::Column::Id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    SelfRef,
-    #[sea_orm(has_many = "super::category_specs::Entity")]
-    CategorySpecs,
-    #[sea_orm(has_many = "super::products::Entity")]
-    Products,
-}
-
-impl Related<super::category_specs::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::CategorySpecs.def()
-    }
+    Regions,
 }
 
 impl Related<super::products::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Products.def()
+    }
+}
+
+impl Related<super::regions::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Regions.def()
     }
 }

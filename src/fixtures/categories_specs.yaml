@@ -1,0 +1,177 @@
+# Smartphones (Mobile Devices -> Smartphones)
+- category_id: "00000000-0000-0000-0000-000000000013" # Smartphones category UUID
+  specs:
+    - spec_name: "Manufacturer"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Apple", "Samsung", "Tecno", "Infinix", "Huawei", "Xiaomi", "Google Pixel", "Nokia", "Other"]'
+      sort_order: 1
+    - spec_name: "Model"
+      spec_type: "text"
+      is_required: true
+      input_placeholder: "e.g., iPhone 14 Pro Max, Galaxy S23 Ultra"
+      sort_order: 2
+    - spec_name: "Condition"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Brand New", "Like New", "Used - Good", "Used - Fair"]'
+      sort_order: 3
+    - spec_name: "Memory (RAM)"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["2GB", "4GB", "6GB", "8GB", "12GB", "16GB"]'
+      sort_order: 4
+    - spec_name: "Storage Capacity"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["32GB", "64GB", "128GB", "256GB", "512GB", "1TB"]'
+      sort_order: 5
+    - spec_name: "Display Size"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["5.5\"", "6.1\"", "6.5\"", "6.7\"", "6.9\""]'
+      sort_order: 6
+    - spec_name: "Color"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Black", "White", "Blue", "Purple", "Gold", "Silver", "Red", "Green"]'
+      sort_order: 7
+    - spec_name: "Battery Health (%)"
+      spec_type: "number"
+      is_required: false
+      validation_rules: '{"min": 0, "max": 100}'
+      input_placeholder: "Enter percentage"
+      sort_order: 8
+    - spec_name: "Included Items"
+      spec_type: "select"
+      is_required: false
+      preset_options: '["Original Box + Accessories", "Phone Only", "Phone + Charger"]'
+      sort_order: 9
+    - spec_name: "Warranty Included"
+      spec_type: "boolean"
+      is_required: false
+      sort_order: 10
+
+# Laptops (Computing & Electronics -> Laptops)
+- category_id: "00000000-0000-0000-0000-000000000017" # Laptops category UUID
+  specs:
+    - spec_name: "Manufacturer"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Apple", "Dell", "HP", "Lenovo", "ASUS", "Acer", "Microsoft", "Other"]'
+      sort_order: 1
+    - spec_name: "Model"
+      spec_type: "text"
+      is_required: true
+      input_placeholder: "e.g., MacBook Pro 14, XPS 15, Spectre x360"
+      sort_order: 2
+    - spec_name: "Condition"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Brand New", "Like New", "Used - Good", "Used - Fair"]'
+      sort_order: 3
+    - spec_name: "Processor"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Intel Core i3", "Intel Core i5", "Intel Core i7", "Intel Core i9", "Apple M1", "Apple M2", "Apple M3", "AMD Ryzen 5", "AMD Ryzen 7", "AMD Ryzen 9"]'
+      sort_order: 4
+    - spec_name: "Memory (RAM)"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["4GB", "8GB", "16GB", "32GB", "64GB"]'
+      sort_order: 5
+    - spec_name: "Storage Capacity"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["128GB", "256GB", "512GB", "1TB", "2TB"]'
+      sort_order: 6
+    - spec_name: "Storage Type"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["SSD", "HDD", "SSD + HDD"]'
+      sort_order: 7
+    - spec_name: "Display Size"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["11\"", "13\"", "14\"", "15\"", "16\"", "17\""]'
+      sort_order: 8
+    - spec_name: "Graphics Card"
+      spec_type: "text"
+      is_required: false
+      input_placeholder: "e.g., Intel Iris Xe, NVIDIA RTX 3060"
+      helper_text: "Optional - leave blank if integrated graphics"
+      sort_order: 9
+    - spec_name: "Operating System"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Windows 10", "Windows 11", "macOS", "Linux", "Chrome OS"]'
+      sort_order: 10
+    - spec_name: "Color"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Space Gray", "Silver", "Gold", "Rose Gold", "Black", "White"]'
+      sort_order: 11
+    - spec_name: "Exchange Possible"
+      spec_type: "boolean"
+      is_required: false
+      sort_order: 12
+
+# Cars (Mobility -> Cars)
+- category_id: "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee" # Cars category UUID
+  specs:
+    - spec_name: "Make"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Toyota", "Honda", "Nissan", "Kia", "Hyundai", "Mercedes-Benz", "BMW", "Audi", "Ford", "Volkswagen", "Mazda", "Suzuki", "Mitsubishi", "Lexus", "Jeep", "Other"]'
+      sort_order: 1
+    - spec_name: "Model"
+      spec_type: "text"
+      is_required: true
+      input_placeholder: "e.g., Corolla, Civic, C-Class, 3 Series"
+      sort_order: 2
+    - spec_name: "Year"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "2006", "2005"]'
+      sort_order: 3
+    - spec_name: "Mileage (km)"
+      spec_type: "number"
+      is_required: true
+      validation_rules: '{"min": 0, "max": 500000}'
+      input_placeholder: "Enter kilometers driven"
+      sort_order: 4
+    - spec_name: "Transmission"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Manual", "Automatic", "CVT", "Semi-Automatic"]'
+      sort_order: 5
+    - spec_name: "Fuel Type"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"]'
+      sort_order: 6
+    - spec_name: "Body Type"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Sedan", "SUV", "Hatchback", "Coupe", "Convertible", "Truck", "Van", "Wagon"]'
+      sort_order: 7
+    - spec_name: "Condition"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Brand New", "Used - Excellent", "Used - Good", "Used - Fair"]'
+      sort_order: 8
+    - spec_name: "Color"
+      spec_type: "select"
+      is_required: true
+      preset_options: '["Black", "White", "Silver", "Gray", "Blue", "Red", "Green", "Brown", "Yellow", "Orange", "Purple"]'
+      sort_order: 9
+    - spec_name: "Engine Size (L)"
+      spec_type: "text"
+      is_required: false
+      input_placeholder: "e.g., 1.8L, 2.0L, 3.5L V6"
+      sort_order: 10
+    - spec_name: "Drive Type"
+      spec_type: "select"
+      is_required: false
+      preset_options: '["FWD", "RWD", "AWD", "4WD"]'
+      sort_order: 11

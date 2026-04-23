@@ -3,6 +3,7 @@
 pub mod prelude;
 
 pub mod categories;
+pub mod category_specs;
 pub mod conversations;
 pub mod favorites;
 pub mod follows;
@@ -12,7 +13,10 @@ pub mod order_items;
 pub mod orders;
 pub mod product_images;
 pub mod product_reviews;
+pub mod product_specs;
 pub mod product_views;
 pub mod products;
+pub mod regions;
+pub mod towns;
 pub mod user_sessions;
 pub mod users;

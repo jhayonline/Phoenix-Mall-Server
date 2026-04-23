@@ -11,3 +11,7 @@ pub mod conversations;
 pub mod messages;
 pub mod follows;
 pub mod notifications;
+pub mod category_specs;
+pub mod product_specs;
+pub mod regions;
+pub mod towns;
