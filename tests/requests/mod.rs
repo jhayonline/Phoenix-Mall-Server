@@ -11,3 +11,5 @@ pub mod admin;
 pub mod chat;
 pub mod follows;
 pub mod online_status;
+pub mod regions;
+pub mod category_specs;

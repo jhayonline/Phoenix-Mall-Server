@@ -56,6 +56,8 @@ impl Hooks for App {
 
     fn routes(_ctx: &AppContext) -> AppRoutes {
         AppRoutes::with_default_routes()
+            .add_route(controllers::category_specs::routes())
+            .add_route(controllers::regions::routes())
             .add_route(controllers::online_status::routes())
             .add_route(controllers::follows::routes())
             .add_route(controllers::chat::routes())
@@ -104,4 +106,3 @@ impl Hooks for App {
         Ok(())
     }
 }
-
