@@ -7,10 +7,9 @@ use crate::{
     models::{
         _entities::users,
         products::{
-            PaginatedProductsResponse, ProductQueryParams, UpdateProductParams,
+            PaginatedProductsResponse, ProductQueryParams,
         },
     },
-    views::product_response::ProductResponse,
 };
 use loco_rs::prelude::*;
 use nanoid::nanoid;
@@ -20,14 +19,83 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-// Import models for categories and specs
 use crate::models::_entities::categories;
 use crate::models::_entities::category_specs;
 use crate::models::_entities::product_specs;
 use crate::models::_entities::regions;
 use crate::models::_entities::towns;
 
-// List all products with pagination, filters, and search
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct ProductSpecResponse {
+    pub spec_id: uuid::Uuid,
+    pub spec_name: String,
+    pub value: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
+pub struct CreateProductParamsV2 {
+    pub title: String,
+    pub description: Option<String>,
+    pub category_id: uuid::Uuid,
+    pub region_id: uuid::Uuid,
+    pub town_id: uuid::Uuid,
+    pub price: f64,
+    pub negotiation: String,
+    pub condition: Option<String>,
+    pub location: Option<String>,
+    pub whatsapp_contact: Option<bool>,
+    pub phone_contact: Option<bool>,
+    pub specs: Vec<ProductSpecParam>,
+}
+
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
+pub struct ProductSpecParam {
+    pub spec_id: uuid::Uuid,
+    pub value: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
+pub struct UpdateProductParamsV2 {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub price: Option<f64>,
+    pub condition: Option<String>,
+    pub location: Option<String>,
+    pub category_id: Option<uuid::Uuid>,
+    pub status: Option<String>,
+    pub whatsapp_contact: Option<bool>,
+    pub phone_contact: Option<bool>,
+    pub region_id: Option<uuid::Uuid>,
+    pub town_id: Option<uuid::Uuid>,
+    pub negotiation: Option<String>,
+    pub specs: Option<Vec<ProductSpecParam>>,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct ProductV2Response {
+    pub id: uuid::Uuid,
+    pub pid: String,
+    pub title: String,
+    pub description: Option<String>,
+    pub price: f64,
+    pub condition: Option<String>,
+    pub location: Option<String>,
+    pub category_id: Option<uuid::Uuid>,
+    pub seller_id: i32,
+    pub status: Option<String>,
+    pub whatsapp_contact: Option<bool>,
+    pub phone_contact: Option<bool>,
+    pub views_count: Option<i32>,
+    pub negotiation: String,
+    pub promotion_type: String,
+    pub region_id: Option<uuid::Uuid>,
+    pub town_id: Option<uuid::Uuid>,
+    pub specs: Vec<ProductSpecResponse>,
+    pub created_at: Option<chrono::DateTime<chrono::FixedOffset>>,
+}
+
+// ============ API Endpoints ============
+
 #[utoipa::path(
     get,
     path = "/api/products/list",
@@ -54,7 +122,18 @@ pub async fn list(
     format::json(paginated)
 }
 
-// Get seller info by ID (for product detail page)
+#[utoipa::path(
+    get,
+    path = "/api/products/seller/{seller_id}",
+    params(
+        ("seller_id" = i32, Path, description = "Seller user ID")
+    ),
+    responses(
+        (status = 200, description = "Seller information", body = serde_json::Value),
+        (status = 404, description = "Seller not found")
+    ),
+    tag = "products"
+)]
 #[debug_handler]
 pub async fn get_seller(
     State(ctx): State<AppContext>,
@@ -88,7 +167,6 @@ pub async fn get_seller(
     }))
 }
 
-// Get single product by pid (public)
 #[utoipa::path(
     get,
     path = "/api/products/get/{pid}",
@@ -96,7 +174,7 @@ pub async fn get_seller(
         ("pid" = String, Path, description = "Product public ID")
     ),
     responses(
-        (status = 200, description = "Product found", body = ProductResponse),
+        (status = 200, description = "Product found", body = ProductV2Response),
         (status = 404, description = "Product not found")
     ),
     tag = "products"
@@ -110,19 +188,36 @@ pub async fn get_by_pid(
         .await?
         .ok_or_else(|| Error::NotFound)?;
 
-    // Get wishlist count
-    let wishlist_count = favorites::Entity::find()
-        .filter(favorites::Column::ProductId.eq(product.id))
+    let product_id = product.id;
+    let product_pid = product.pid.clone();
+    let product_title = product.title.clone();
+    let product_description = product.description.clone();
+    let product_condition = product.condition.clone();
+    let product_location = product.location.clone();
+    let product_price = product.price;
+    let product_category_id = product.category_id;
+    let product_seller_id = product.seller_id;
+    let product_status = product.status.clone();
+    let product_whatsapp_contact = product.whatsapp_contact;
+    let product_phone_contact = product.phone_contact;
+    let product_views_count = product.views_count;
+    let product_negotiation = product.negotiation.clone();
+    let product_promotion_type = product.promotion_type.clone();
+    let product_region_id = product.region_id;
+    let product_town_id = product.town_id;
+    let product_created_at = product.created_at;
+
+    let _wishlist_count = favorites::Entity::find()
+        .filter(favorites::Column::ProductId.eq(product_id))
         .count(&ctx.db)
         .await?;
 
-    // Get rating info from database
     let reviews = product_reviews::Entity::find()
-        .filter(product_reviews::Column::ProductId.eq(product.id))
+        .filter(product_reviews::Column::ProductId.eq(product_id))
         .all(&ctx.db)
         .await?;
 
-    let (average_rating, total_reviews) = if reviews.is_empty() {
+    let (_average_rating, _total_reviews) = if reviews.is_empty() {
         (0.0, 0)
     } else {
         let sum: i32 = reviews.iter().map(|r| r.rating).sum();
@@ -130,9 +225,8 @@ pub async fn get_by_pid(
         (avg, reviews.len())
     };
 
-    // Get product specs
     let product_specs_list: Vec<(product_specs::Model, Option<category_specs::Model>)> = product_specs::Entity::find()
-        .filter(product_specs::Column::ProductId.eq(product.id))
+        .filter(product_specs::Column::ProductId.eq(product_id))
         .find_also_related(category_specs::Entity)
         .all(&ctx.db)
         .await?;
@@ -148,105 +242,53 @@ pub async fn get_by_pid(
         })
         .collect();
 
-    // Get region and town names - FIXED: added .await
-    let region_name = if let Some(region_id) = product.region_id {
+    let _region_name = if let Some(region_id) = product_region_id {
         regions::Entity::find_by_id(region_id).one(&ctx.db).await.ok().flatten()
     } else {
         None
     };
     
-    let town_name = if let Some(town_id) = product.town_id {
+    let _town_name = if let Some(town_id) = product_town_id {
         towns::Entity::find_by_id(town_id).one(&ctx.db).await.ok().flatten()
     } else {
         None
     };
 
     // Increment view count
-    let mut active_product: products::ActiveModel = product.clone().into();
-    let current_views = product.views_count.unwrap_or(0);
+    let current_views = product_views_count.unwrap_or(0);
+    
+    let product_to_update = products::Entity::find_by_id(product_id)
+        .one(&ctx.db)
+        .await?
+        .ok_or_else(|| Error::NotFound)?;
+    
+    let mut active_product: products::ActiveModel = product_to_update.into();
     active_product.views_count = ActiveValue::set(Some(current_views + 1));
     let _ = active_product.update(&ctx.db).await;
 
-    format::json(serde_json::json!({
-        "id": product.id,
-        "pid": product.pid,
-        "title": product.title,
-        "description": product.description,
-        "price": product.price,
-        "condition": product.condition,
-        "location": product.location,
-        "category_id": product.category_id,
-        "seller_id": product.seller_id,
-        "status": product.status,
-        "whatsapp_contact": product.whatsapp_contact,
-        "phone_contact": product.phone_contact,
-        "views_count": current_views + 1,
-        "created_at": product.created_at,
-        "updated_at": product.updated_at,
-        "wishlist_count": wishlist_count,
-        "average_rating": average_rating,
-        "total_reviews": total_reviews,
-        "specs": specs,
-        "region": region_name.map(|r| r.name),
-        "town": town_name.map(|t| t.name),
-        "negotiation": product.negotiation,
-        "promotion_type": product.promotion_type,
-    }))
+    format::json(ProductV2Response {
+        id: product_id,
+        pid: product_pid,
+        title: product_title,
+        description: product_description,
+        price: product_price.to_f64().unwrap_or(0.0),
+        condition: product_condition,
+        location: product_location,
+        category_id: product_category_id,
+        seller_id: product_seller_id,
+        status: product_status,
+        whatsapp_contact: product_whatsapp_contact,
+        phone_contact: product_phone_contact,
+        views_count: Some(current_views + 1),
+        negotiation: product_negotiation.unwrap_or_else(|| "negotiable".to_string()),
+        promotion_type: product_promotion_type.unwrap_or_else(|| "standard".to_string()),
+        region_id: product_region_id,
+        town_id: product_town_id,
+        specs,
+        created_at: product_created_at,
+    })
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
-pub struct CreateProductParamsV2 {
-    pub title: String,
-    pub description: Option<String>,
-    pub category_id: uuid::Uuid,
-    pub region_id: uuid::Uuid,
-    pub town_id: uuid::Uuid,
-    pub price: f64,
-    pub negotiation: String,
-    pub condition: Option<String>,
-    pub location: Option<String>,
-    pub whatsapp_contact: Option<bool>,
-    pub phone_contact: Option<bool>,
-    pub specs: Vec<ProductSpecParam>,
-}
-
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProductSpecParam {
-    pub spec_id: uuid::Uuid,
-    pub value: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct ProductV2Response {
-    pub id: uuid::Uuid,
-    pub pid: String,
-    pub title: String,
-    pub description: Option<String>,
-    pub price: f64,
-    pub condition: Option<String>,
-    pub location: Option<String>,
-    pub category_id: Option<uuid::Uuid>,
-    pub seller_id: i32,
-    pub status: Option<String>,
-    pub whatsapp_contact: Option<bool>,
-    pub phone_contact: Option<bool>,
-    pub views_count: Option<i32>,
-    pub negotiation: String,
-    pub promotion_type: String,
-    pub region_id: Option<uuid::Uuid>,
-    pub town_id: Option<uuid::Uuid>,
-    pub specs: Vec<ProductSpecResponse>,
-    pub created_at: Option<chrono::DateTime<chrono::FixedOffset>>,
-}
-
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct ProductSpecResponse {
-    pub spec_id: uuid::Uuid,
-    pub spec_name: String,
-    pub value: String,
-}
-
-// Create new product (replaces old create)
 #[utoipa::path(
     post,
     path = "/api/products/create",
@@ -268,7 +310,6 @@ pub async fn create(
 ) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
     
-    // Verify category exists
     let category = categories::Entity::find_by_id(params.category_id)
         .one(&ctx.db)
         .await?
@@ -280,15 +321,14 @@ pub async fn create(
     let decimal_price = loco_rs::prelude::Decimal::from_f64(params.price)
         .ok_or_else(|| Error::BadRequest("Invalid price".to_string()))?;
     
-    // Create the product
-    let product = products::ActiveModel {
+    let _product = products::ActiveModel {
         id: ActiveValue::set(product_id),
-        pid: ActiveValue::set(pid),
-        title: ActiveValue::set(params.title),
-        description: ActiveValue::set(params.description),
+        pid: ActiveValue::set(pid.clone()),
+        title: ActiveValue::set(params.title.clone()),
+        description: ActiveValue::set(params.description.clone()),
         price: ActiveValue::set(decimal_price),
-        condition: ActiveValue::set(params.condition),
-        location: ActiveValue::set(params.location),
+        condition: ActiveValue::set(params.condition.clone()),
+        location: ActiveValue::set(params.location.clone()),
         category_id: ActiveValue::set(Some(params.category_id)),
         seller_id: ActiveValue::set(user.id),
         status: ActiveValue::set(Some("active".to_string())),
@@ -297,16 +337,14 @@ pub async fn create(
         views_count: ActiveValue::set(Some(0)),
         region_id: ActiveValue::set(Some(params.region_id)),
         town_id: ActiveValue::set(Some(params.town_id)),
-        negotiation: ActiveValue::set(Some(params.negotiation)),
+        negotiation: ActiveValue::set(Some(params.negotiation.clone())),
         promotion_type: ActiveValue::set(Some("standard".to_string())),
         ..Default::default()
     }
     .insert(&ctx.db)
     .await?;
     
-    // Insert product specifications
     for spec_param in &params.specs {
-        // Verify the spec belongs to this category
         let spec = category_specs::Entity::find_by_id(spec_param.spec_id)
             .one(&ctx.db)
             .await?;
@@ -315,7 +353,7 @@ pub async fn create(
             if spec.category_id == category.id {
                 let product_spec = product_specs::ActiveModel {
                     id: ActiveValue::set(uuid::Uuid::new_v4()),
-                    product_id: ActiveValue::set(product.id),
+                    product_id: ActiveValue::set(product_id),
                     spec_id: ActiveValue::set(spec_param.spec_id),
                     spec_value: ActiveValue::set(spec_param.value.clone()),
                     created_at: ActiveValue::set(Some(chrono::Utc::now().into())),
@@ -325,7 +363,6 @@ pub async fn create(
         }
     }
     
-    // Notify followers about new product
     let followers_list = follows::Entity::find()
         .filter(follows::Column::FollowingId.eq(user.id))
         .all(&ctx.db)
@@ -333,9 +370,9 @@ pub async fn create(
 
     for follower in followers_list {
         let notification_data = serde_json::json!({
-            "product_id": product.id,
-            "product_pid": product.pid,
-            "product_title": product.title,
+            "product_id": product_id,
+            "product_pid": pid,
+            "product_title": params.title,
             "seller_id": user.id,
             "seller_name": user.name,
         });
@@ -345,7 +382,7 @@ pub async fn create(
             user_id: ActiveValue::set(follower.follower_id),
             r#type: ActiveValue::set("new_product".to_string()),
             title: ActiveValue::set(format!("{} posted a new product", user.name)),
-            message: ActiveValue::set(format!("Check out \"{}\"", product.title)),
+            message: ActiveValue::set(format!("Check out \"{}\"", params.title)),
             data: ActiveValue::set(Some(notification_data)),
             read: ActiveValue::set(Some(false)),
             created_at: ActiveValue::set(Some(chrono::Utc::now().into())),
@@ -353,9 +390,8 @@ pub async fn create(
         let _ = notification.insert(&ctx.db).await;
     }
     
-    // Fetch the inserted specs for response
     let product_specs_list: Vec<(product_specs::Model, Option<category_specs::Model>)> = product_specs::Entity::find()
-        .filter(product_specs::Column::ProductId.eq(product.id))
+        .filter(product_specs::Column::ProductId.eq(product_id))
         .find_also_related(category_specs::Entity)
         .all(&ctx.db)
         .await?;
@@ -366,41 +402,56 @@ pub async fn create(
             spec_opt.map(|spec| ProductSpecResponse {
                 spec_id: product_spec.spec_id,
                 spec_name: spec.spec_name,
-                value: product_spec.spec_value,
+                value: product_spec.spec_value.clone(),
             })
         })
         .collect();
     
     format::json(ProductV2Response {
-        id: product.id,
-        pid: product.pid,
-        title: product.title,
-        description: product.description,
-        price: product.price.to_f64().unwrap_or(0.0),
-        condition: product.condition,
-        location: product.location,
-        category_id: product.category_id,
-        seller_id: product.seller_id,
-        status: product.status,
-        whatsapp_contact: product.whatsapp_contact,
-        phone_contact: product.phone_contact,
-        views_count: product.views_count,
-        negotiation: product.negotiation.unwrap_or_else(|| "negotiable".to_string()),
-        promotion_type: product.promotion_type.unwrap_or_else(|| "standard".to_string()),
-        region_id: product.region_id,
-        town_id: product.town_id,
+        id: product_id,
+        pid,
+        title: params.title,
+        description: params.description,
+        price: params.price,
+        condition: params.condition,
+        location: params.location,
+        category_id: Some(params.category_id),
+        seller_id: user.id,
+        status: Some("active".to_string()),
+        whatsapp_contact: params.whatsapp_contact,
+        phone_contact: params.phone_contact,
+        views_count: Some(0),
+        negotiation: params.negotiation,
+        promotion_type: "standard".to_string(),
+        region_id: Some(params.region_id),
+        town_id: Some(params.town_id),
         specs: specs_response,
-        created_at: product.created_at,
+        created_at: Some(chrono::Utc::now().into()),
     })
 }
 
-// Update product (seller only)
+#[utoipa::path(
+    put,
+    path = "/api/products/update/{pid}",
+    security(("bearer_auth" = [])),
+    params(
+        ("pid" = String, Path, description = "Product public ID")
+    ),
+    request_body = UpdateProductParamsV2,
+    responses(
+        (status = 200, description = "Product updated successfully", body = ProductV2Response),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Not your product"),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "products"
+)]
 #[debug_handler]
 pub async fn update(
     auth: auth::JWT,
     State(ctx): State<AppContext>,
     Path(pid): Path<String>,
-    Json(params): Json<UpdateProductParams>,
+    Json(params): Json<UpdateProductParamsV2>,
 ) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
 
@@ -411,6 +462,9 @@ pub async fn update(
     if product.seller_id != user.id {
         return unauthorized("You can only update your own listings");
     }
+
+    let product_id = product.id;
+    let product_pid = product.pid.clone();
 
     let mut product_active: products::ActiveModel = product.into();
 
@@ -443,12 +497,91 @@ pub async fn update(
     if let Some(phone_contact) = params.phone_contact {
         product_active.phone_contact = ActiveValue::set(Some(phone_contact));
     }
+    if let Some(region_id) = params.region_id {
+        product_active.region_id = ActiveValue::set(Some(region_id));
+    }
+    if let Some(town_id) = params.town_id {
+        product_active.town_id = ActiveValue::set(Some(town_id));
+    }
+    if let Some(negotiation) = params.negotiation {
+        product_active.negotiation = ActiveValue::set(Some(negotiation));
+    }
 
     let updated_product = product_active.update(&ctx.db).await?;
-    format::json(ProductResponse::from_model(&updated_product))
+    
+    if let Some(specs) = params.specs {
+        product_specs::Entity::delete_many()
+            .filter(product_specs::Column::ProductId.eq(product_id))
+            .exec(&ctx.db)
+            .await?;
+        
+        for spec_param in specs {
+            let product_spec = product_specs::ActiveModel {
+                id: ActiveValue::set(uuid::Uuid::new_v4()),
+                product_id: ActiveValue::set(product_id),
+                spec_id: ActiveValue::set(spec_param.spec_id),
+                spec_value: ActiveValue::set(spec_param.value),
+                created_at: ActiveValue::set(Some(chrono::Utc::now().into())),
+            };
+            let _ = product_spec.insert(&ctx.db).await;
+        }
+    }
+    
+    let product_specs_list: Vec<(product_specs::Model, Option<category_specs::Model>)> = product_specs::Entity::find()
+        .filter(product_specs::Column::ProductId.eq(product_id))
+        .find_also_related(category_specs::Entity)
+        .all(&ctx.db)
+        .await?;
+    
+    let specs_response: Vec<ProductSpecResponse> = product_specs_list
+        .into_iter()
+        .filter_map(|(ps, spec_opt)| {
+            spec_opt.map(|spec| ProductSpecResponse {
+                spec_id: ps.spec_id,
+                spec_name: spec.spec_name,
+                value: ps.spec_value,
+            })
+        })
+        .collect();
+    
+    format::json(ProductV2Response {
+        id: product_id,
+        pid: product_pid,
+        title: updated_product.title,
+        description: updated_product.description,
+        price: updated_product.price.to_f64().unwrap_or(0.0),
+        condition: updated_product.condition,
+        location: updated_product.location,
+        category_id: updated_product.category_id,
+        seller_id: updated_product.seller_id,
+        status: updated_product.status,
+        whatsapp_contact: updated_product.whatsapp_contact,
+        phone_contact: updated_product.phone_contact,
+        views_count: updated_product.views_count,
+        negotiation: updated_product.negotiation.unwrap_or_else(|| "negotiable".to_string()),
+        promotion_type: updated_product.promotion_type.unwrap_or_else(|| "standard".to_string()),
+        region_id: updated_product.region_id,
+        town_id: updated_product.town_id,
+        specs: specs_response,
+        created_at: updated_product.created_at,
+    })
 }
 
-// Delete product (seller only)
+#[utoipa::path(
+    delete,
+    path = "/api/products/delete/{pid}",
+    security(("bearer_auth" = [])),
+    params(
+        ("pid" = String, Path, description = "Product public ID")
+    ),
+    responses(
+        (status = 200, description = "Product deleted successfully"),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Not your product"),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "products"
+)]
 #[debug_handler]
 pub async fn delete_product(
     auth: auth::JWT,
@@ -469,7 +602,21 @@ pub async fn delete_product(
     format::empty_json()
 }
 
-// Mark product as sold (seller only)
+#[utoipa::path(
+    post,
+    path = "/api/products/{pid}/mark-sold",
+    security(("bearer_auth" = [])),
+    params(
+        ("pid" = String, Path, description = "Product public ID")
+    ),
+    responses(
+        (status = 200, description = "Product marked as sold", body = ProductV2Response),
+        (status = 401, description = "Unauthorized"),
+        (status = 403, description = "Not your product"),
+        (status = 404, description = "Product not found")
+    ),
+    tag = "products"
+)]
 #[debug_handler]
 pub async fn mark_sold(
     auth: auth::JWT,
@@ -486,14 +633,63 @@ pub async fn mark_sold(
         return unauthorized("You can only update your own listings");
     }
 
+    let product_id = product.id;
+    let product_pid = product.pid.clone();
+    let product_title = product.title.clone();
+    let product_description = product.description.clone();
+    let product_price = product.price;
+    let product_condition = product.condition.clone();
+    let product_location = product.location.clone();
+    let product_category_id = product.category_id;
+    let product_seller_id = product.seller_id;
+    let product_whatsapp_contact = product.whatsapp_contact;
+    let product_phone_contact = product.phone_contact;
+    let product_views_count = product.views_count;
+    let product_negotiation = product.negotiation.clone();
+    let product_promotion_type = product.promotion_type.clone();
+    let product_region_id = product.region_id;
+    let product_town_id = product.town_id;
+    let product_created_at = product.created_at;
+
     let mut product_active: products::ActiveModel = product.into();
     product_active.status = ActiveValue::set(Some("sold".to_string()));
-    let updated_product = product_active.update(&ctx.db).await?;
-
-    format::json(ProductResponse::from_model(&updated_product))
+    let _ = product_active.update(&ctx.db).await;
+    
+    format::json(ProductV2Response {
+        id: product_id,
+        pid: product_pid,
+        title: product_title,
+        description: product_description,
+        price: product_price.to_f64().unwrap_or(0.0),
+        condition: product_condition,
+        location: product_location,
+        category_id: product_category_id,
+        seller_id: product_seller_id,
+        status: Some("sold".to_string()),
+        whatsapp_contact: product_whatsapp_contact,
+        phone_contact: product_phone_contact,
+        views_count: product_views_count,
+        negotiation: product_negotiation.unwrap_or_else(|| "negotiable".to_string()),
+        promotion_type: product_promotion_type.unwrap_or_else(|| "standard".to_string()),
+        region_id: product_region_id,
+        town_id: product_town_id,
+        specs: vec![],
+        created_at: product_created_at,
+    })
 }
 
-// Get search suggestions (autocomplete)
+#[utoipa::path(
+    get,
+    path = "/api/products/search/suggestions",
+    params(
+        ("search" = Option<String>, Query, description = "Search term")
+    ),
+    responses(
+        (status = 200, description = "Search suggestions", body = Vec<String>),
+        (status = 400, description = "Search term too short")
+    ),
+    tag = "products"
+)]
 #[debug_handler]
 pub async fn search_suggestions(
     State(ctx): State<AppContext>,
