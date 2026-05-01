@@ -1,3 +1,5 @@
+// src/models/products.rs - Replace the specification filters section with this working version
+
 use sea_orm::entity::prelude::*;
 use sea_orm::{QueryOrder, QuerySelect};
 use serde::{Deserialize, Serialize};
@@ -9,6 +11,7 @@ pub type Products = Entity;
 
 use crate::models::_entities::categories;
 use crate::views::product_response::ProductResponse;
+use crate::models::_entities::product_specs;
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct CreateProductParams {
@@ -47,6 +50,7 @@ pub struct ProductQueryParams {
     pub location: Option<String>,
     pub condition: Option<String>,
     pub search: Option<String>,
+    pub specs: Option<String>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -115,6 +119,57 @@ impl Entity {
             let price_str = format!("{:.2}", max_price);
             if let Ok(max_decimal) = price_str.parse::<loco_rs::prelude::Decimal>() {
                 query = query.filter(super::_entities::products::Column::Price.lte(max_decimal));
+            }
+        }
+
+        // Specification filters - simpler approach without subqueries
+        if let Some(specs_str) = &params.specs {
+            let mut filter_product_ids: Option<Vec<Uuid>> = None;
+            let mut first_spec = true;
+            
+            for spec_filter in specs_str.split(',') {
+                let parts: Vec<&str> = spec_filter.split(':').collect();
+                if parts.len() == 2 {
+                    if let Ok(spec_id) = uuid::Uuid::parse_str(parts[0]) {
+                        let spec_value = parts[1];
+                        
+                        // Find products that have this specification
+                        let matching_products: Vec<Uuid> = product_specs::Entity::find()
+                            .filter(product_specs::Column::SpecId.eq(spec_id))
+                            .filter(product_specs::Column::SpecValue.eq(spec_value))
+                            .select_only()
+                            .column(product_specs::Column::ProductId)
+                            .into_tuple()
+                            .all(db)
+                            .await?;
+                        
+                        let matching_set: std::collections::HashSet<Uuid> = matching_products.into_iter().collect();
+                        
+                        if first_spec {
+                            filter_product_ids = Some(matching_set.into_iter().collect());
+                            first_spec = false;
+                        } else if let Some(current_ids) = filter_product_ids {
+                            let current_set: std::collections::HashSet<Uuid> = current_ids.into_iter().collect();
+                            let intersected: Vec<Uuid> = current_set.intersection(&matching_set).cloned().collect();
+                            filter_product_ids = Some(intersected);
+                        }
+                    }
+                }
+            }
+            
+            // Apply the product ID filter if we have any
+            if let Some(product_ids) = filter_product_ids {
+                if product_ids.is_empty() {
+                    // No products match, return empty result
+                    return Ok(PaginatedProductsResponse {
+                        items: vec![],
+                        total: 0,
+                        page,
+                        per_page,
+                        total_pages: 0,
+                    });
+                }
+                query = query.filter(super::_entities::products::Column::Id.is_in(product_ids));
             }
         }
 

@@ -720,6 +720,38 @@ pub async fn search_suggestions(
     format::json(unique_titles)
 }
 
+// Also add endpoint to get category product counts
+#[utoipa::path(
+    get,
+    path = "/api/categories/counts",
+    responses(
+        (status = 200, description = "Category product counts", body = serde_json::Value),
+    ),
+    tag = "categories"
+)]
+#[debug_handler]
+pub async fn get_category_counts(State(ctx): State<AppContext>) -> Result<Response> {
+    use sea_orm::QuerySelect;
+    
+    // Get all active products with their category IDs
+    let products_with_categories = products::Entity::find()
+        .filter(products::Column::Status.eq("active"))
+        .select_only()
+        .column(products::Column::CategoryId)
+        .all(&ctx.db)
+        .await?;
+    
+    // Count products per category
+    let mut counts: std::collections::HashMap<uuid::Uuid, i64> = std::collections::HashMap::new();
+    for product in products_with_categories {
+        if let Some(category_id) = product.category_id {
+            *counts.entry(category_id).or_insert(0) += 1;
+        }
+    }
+    
+    format::json(counts)
+}
+
 pub fn routes() -> Routes {
     Routes::new()
         .prefix("api/products")
@@ -731,4 +763,5 @@ pub fn routes() -> Routes {
         .add("/{pid}/mark-sold", post(mark_sold))
         .add("/search/suggestions", get(search_suggestions))
         .add("/seller/{seller_id}", get(get_seller))
+        .add("/categories/counts", get(get_category_counts))
 }
