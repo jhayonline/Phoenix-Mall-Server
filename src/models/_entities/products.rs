@@ -50,6 +50,8 @@ pub enum Relation {
     Favorites,
     #[sea_orm(has_many = "super::order_items::Entity")]
     OrderItems,
+    #[sea_orm(has_many = "super::price_recommendations::Entity")]
+    PriceRecommendations,
     #[sea_orm(has_many = "super::product_images::Entity")]
     ProductImages,
     #[sea_orm(has_many = "super::product_reviews::Entity")]
@@ -99,6 +101,12 @@ impl Related<super::favorites::Entity> for Entity {
 impl Related<super::order_items::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::OrderItems.def()
+    }
+}
+
+impl Related<super::price_recommendations::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::PriceRecommendations.def()
     }
 }
 

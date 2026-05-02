@@ -20,6 +20,7 @@ mod m20260423_120640_create_category_specs;
 mod m20260423_120848_create_product_specs;
 mod m20260423_120930_locations;
 mod m20260423_121240_alter_products_add_fields;
+mod m20260502_164841_add_price_intel_tables;
 pub struct Migrator;
 
 #[async_trait::async_trait]
@@ -44,6 +45,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260423_120848_create_product_specs::Migration),
             Box::new(m20260423_120930_locations::Migration),
             Box::new(m20260423_121240_alter_products_add_fields::Migration),
+            Box::new(m20260502_164841_add_price_intel_tables::Migration),
             // inject-above (do not remove this comment)
         ]
     }

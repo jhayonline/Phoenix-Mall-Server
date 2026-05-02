@@ -15,3 +15,5 @@ pub mod category_specs;
 pub mod product_specs;
 pub mod regions;
 pub mod towns;
+pub mod competitor_listings;
+pub mod price_recommendations;

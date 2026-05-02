@@ -4,6 +4,7 @@ pub mod prelude;
 
 pub mod categories;
 pub mod category_specs;
+pub mod competitor_listings;
 pub mod conversations;
 pub mod favorites;
 pub mod follows;
@@ -11,6 +12,7 @@ pub mod messages;
 pub mod notifications;
 pub mod order_items;
 pub mod orders;
+pub mod price_recommendations;
 pub mod product_images;
 pub mod product_reviews;
 pub mod product_specs;

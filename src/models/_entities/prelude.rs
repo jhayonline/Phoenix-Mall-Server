@@ -2,6 +2,7 @@
 
 pub use super::categories::Entity as Categories;
 pub use super::category_specs::Entity as CategorySpecs;
+pub use super::competitor_listings::Entity as CompetitorListings;
 pub use super::conversations::Entity as Conversations;
 pub use super::favorites::Entity as Favorites;
 pub use super::follows::Entity as Follows;
@@ -9,6 +10,7 @@ pub use super::messages::Entity as Messages;
 pub use super::notifications::Entity as Notifications;
 pub use super::order_items::Entity as OrderItems;
 pub use super::orders::Entity as Orders;
+pub use super::price_recommendations::Entity as PriceRecommendations;
 pub use super::product_images::Entity as ProductImages;
 pub use super::product_reviews::Entity as ProductReviews;
 pub use super::product_specs::Entity as ProductSpecs;
