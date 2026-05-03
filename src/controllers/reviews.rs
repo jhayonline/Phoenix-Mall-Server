@@ -19,6 +19,7 @@ pub struct ReviewResponse {
     pub rating: i32,
     pub comment: Option<String>,
     pub user_name: String,
+    pub user_avatar: Option<String>,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 
@@ -119,6 +120,7 @@ pub async fn get_product_reviews(
                 rating: review.rating,
                 comment: review.comment,
                 user_name: user.name,
+                user_avatar: user.avatar_url, // Add this line
                 created_at: review.created_at.unwrap(),
             })
         })

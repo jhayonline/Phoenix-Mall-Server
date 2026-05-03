@@ -3,13 +3,9 @@
 #![allow(clippy::unused_async)]
 use crate::models::_entities::products;
 use crate::models::_entities::{favorites, follows, notifications, product_reviews};
-use crate::{
-    models::{
-        _entities::users,
-        products::{
-            PaginatedProductsResponse, ProductQueryParams,
-        },
-    },
+use crate::models::{
+    _entities::users,
+    products::{PaginatedProductsResponse, ProductQueryParams},
 };
 use loco_rs::prelude::*;
 use nanoid::nanoid;
@@ -225,11 +221,12 @@ pub async fn get_by_pid(
         (avg, reviews.len())
     };
 
-    let product_specs_list: Vec<(product_specs::Model, Option<category_specs::Model>)> = product_specs::Entity::find()
-        .filter(product_specs::Column::ProductId.eq(product_id))
-        .find_also_related(category_specs::Entity)
-        .all(&ctx.db)
-        .await?;
+    let product_specs_list: Vec<(product_specs::Model, Option<category_specs::Model>)> =
+        product_specs::Entity::find()
+            .filter(product_specs::Column::ProductId.eq(product_id))
+            .find_also_related(category_specs::Entity)
+            .all(&ctx.db)
+            .await?;
 
     let specs: Vec<ProductSpecResponse> = product_specs_list
         .into_iter()
@@ -243,25 +240,33 @@ pub async fn get_by_pid(
         .collect();
 
     let _region_name = if let Some(region_id) = product_region_id {
-        regions::Entity::find_by_id(region_id).one(&ctx.db).await.ok().flatten()
+        regions::Entity::find_by_id(region_id)
+            .one(&ctx.db)
+            .await
+            .ok()
+            .flatten()
     } else {
         None
     };
-    
+
     let _town_name = if let Some(town_id) = product_town_id {
-        towns::Entity::find_by_id(town_id).one(&ctx.db).await.ok().flatten()
+        towns::Entity::find_by_id(town_id)
+            .one(&ctx.db)
+            .await
+            .ok()
+            .flatten()
     } else {
         None
     };
 
     // Increment view count
     let current_views = product_views_count.unwrap_or(0);
-    
+
     let product_to_update = products::Entity::find_by_id(product_id)
         .one(&ctx.db)
         .await?
         .ok_or_else(|| Error::NotFound)?;
-    
+
     let mut active_product: products::ActiveModel = product_to_update.into();
     active_product.views_count = ActiveValue::set(Some(current_views + 1));
     let _ = active_product.update(&ctx.db).await;
@@ -309,18 +314,18 @@ pub async fn create(
     Json(params): Json<CreateProductParamsV2>,
 ) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
-    
+
     let category = categories::Entity::find_by_id(params.category_id)
         .one(&ctx.db)
         .await?
         .ok_or_else(|| Error::NotFound)?;
-    
+
     let pid = nanoid!(21);
     let product_id = uuid::Uuid::new_v4();
-    
+
     let decimal_price = loco_rs::prelude::Decimal::from_f64(params.price)
         .ok_or_else(|| Error::BadRequest("Invalid price".to_string()))?;
-    
+
     let _product = products::ActiveModel {
         id: ActiveValue::set(product_id),
         pid: ActiveValue::set(pid.clone()),
@@ -343,12 +348,12 @@ pub async fn create(
     }
     .insert(&ctx.db)
     .await?;
-    
+
     for spec_param in &params.specs {
         let spec = category_specs::Entity::find_by_id(spec_param.spec_id)
             .one(&ctx.db)
             .await?;
-        
+
         if let Some(spec) = spec {
             if spec.category_id == category.id {
                 let product_spec = product_specs::ActiveModel {
@@ -362,7 +367,7 @@ pub async fn create(
             }
         }
     }
-    
+
     let followers_list = follows::Entity::find()
         .filter(follows::Column::FollowingId.eq(user.id))
         .all(&ctx.db)
@@ -389,13 +394,14 @@ pub async fn create(
         };
         let _ = notification.insert(&ctx.db).await;
     }
-    
-    let product_specs_list: Vec<(product_specs::Model, Option<category_specs::Model>)> = product_specs::Entity::find()
-        .filter(product_specs::Column::ProductId.eq(product_id))
-        .find_also_related(category_specs::Entity)
-        .all(&ctx.db)
-        .await?;
-    
+
+    let product_specs_list: Vec<(product_specs::Model, Option<category_specs::Model>)> =
+        product_specs::Entity::find()
+            .filter(product_specs::Column::ProductId.eq(product_id))
+            .find_also_related(category_specs::Entity)
+            .all(&ctx.db)
+            .await?;
+
     let specs_response: Vec<ProductSpecResponse> = product_specs_list
         .into_iter()
         .filter_map(|(product_spec, spec_opt)| {
@@ -406,7 +412,7 @@ pub async fn create(
             })
         })
         .collect();
-    
+
     format::json(ProductV2Response {
         id: product_id,
         pid,
@@ -508,13 +514,13 @@ pub async fn update(
     }
 
     let updated_product = product_active.update(&ctx.db).await?;
-    
+
     if let Some(specs) = params.specs {
         product_specs::Entity::delete_many()
             .filter(product_specs::Column::ProductId.eq(product_id))
             .exec(&ctx.db)
             .await?;
-        
+
         for spec_param in specs {
             let product_spec = product_specs::ActiveModel {
                 id: ActiveValue::set(uuid::Uuid::new_v4()),
@@ -526,13 +532,14 @@ pub async fn update(
             let _ = product_spec.insert(&ctx.db).await;
         }
     }
-    
-    let product_specs_list: Vec<(product_specs::Model, Option<category_specs::Model>)> = product_specs::Entity::find()
-        .filter(product_specs::Column::ProductId.eq(product_id))
-        .find_also_related(category_specs::Entity)
-        .all(&ctx.db)
-        .await?;
-    
+
+    let product_specs_list: Vec<(product_specs::Model, Option<category_specs::Model>)> =
+        product_specs::Entity::find()
+            .filter(product_specs::Column::ProductId.eq(product_id))
+            .find_also_related(category_specs::Entity)
+            .all(&ctx.db)
+            .await?;
+
     let specs_response: Vec<ProductSpecResponse> = product_specs_list
         .into_iter()
         .filter_map(|(ps, spec_opt)| {
@@ -543,7 +550,7 @@ pub async fn update(
             })
         })
         .collect();
-    
+
     format::json(ProductV2Response {
         id: product_id,
         pid: product_pid,
@@ -558,8 +565,12 @@ pub async fn update(
         whatsapp_contact: updated_product.whatsapp_contact,
         phone_contact: updated_product.phone_contact,
         views_count: updated_product.views_count,
-        negotiation: updated_product.negotiation.unwrap_or_else(|| "negotiable".to_string()),
-        promotion_type: updated_product.promotion_type.unwrap_or_else(|| "standard".to_string()),
+        negotiation: updated_product
+            .negotiation
+            .unwrap_or_else(|| "negotiable".to_string()),
+        promotion_type: updated_product
+            .promotion_type
+            .unwrap_or_else(|| "standard".to_string()),
         region_id: updated_product.region_id,
         town_id: updated_product.town_id,
         specs: specs_response,
@@ -654,7 +665,7 @@ pub async fn mark_sold(
     let mut product_active: products::ActiveModel = product.into();
     product_active.status = ActiveValue::set(Some("sold".to_string()));
     let _ = product_active.update(&ctx.db).await;
-    
+
     format::json(ProductV2Response {
         id: product_id,
         pid: product_pid,
@@ -732,7 +743,7 @@ pub async fn search_suggestions(
 #[debug_handler]
 pub async fn get_category_counts(State(ctx): State<AppContext>) -> Result<Response> {
     use sea_orm::QuerySelect;
-    
+
     // Get all active products with their category IDs
     let products_with_categories = products::Entity::find()
         .filter(products::Column::Status.eq("active"))
@@ -740,7 +751,7 @@ pub async fn get_category_counts(State(ctx): State<AppContext>) -> Result<Respon
         .column(products::Column::CategoryId)
         .all(&ctx.db)
         .await?;
-    
+
     // Count products per category
     let mut counts: std::collections::HashMap<uuid::Uuid, i64> = std::collections::HashMap::new();
     for product in products_with_categories {
@@ -748,8 +759,78 @@ pub async fn get_category_counts(State(ctx): State<AppContext>) -> Result<Respon
             *counts.entry(category_id).or_insert(0) += 1;
         }
     }
-    
+
     format::json(counts)
+}
+
+#[debug_handler]
+pub async fn get_related_products(
+    State(ctx): State<AppContext>,
+    Path(product_pid): Path<String>,
+) -> Result<Response> {
+    // Find the current product
+    let product = products::Entity::find()
+        .filter(products::Column::Pid.eq(&product_pid))
+        .one(&ctx.db)
+        .await?
+        .ok_or_else(|| Error::NotFound)?;
+
+    // Extract keywords from product title (e.g., "iPhone 14 Pro Max" -> "iPhone")
+    let title_keywords: Vec<&str> = product.title.split_whitespace().collect();
+    let mut search_terms = Vec::new();
+
+    // Use the first meaningful word (brand name) and maybe the model
+    if !title_keywords.is_empty() {
+        // Add brand name (first word)
+        search_terms.push(title_keywords[0].to_string());
+
+        // If there's a model number like "14" or "Pro", add it too
+        for word in title_keywords.iter().skip(1).take(2) {
+            if word.len() > 1 && !word.chars().all(|c| c.is_ascii_digit()) {
+                search_terms.push(word.to_string());
+                break;
+            }
+        }
+    }
+
+    // Build search condition
+    let mut condition = Condition::any();
+    for term in search_terms {
+        condition = condition.add(products::Column::Title.contains(&term));
+    }
+
+    // Find related products by title similarity, excluding current product
+    let related_products = products::Entity::find()
+        .filter(condition)
+        .filter(products::Column::Pid.ne(&product_pid))
+        .filter(products::Column::Status.eq("active"))
+        .limit(6)
+        .all(&ctx.db)
+        .await?;
+
+    // If not enough results, fall back to category-based products
+    if related_products.len() < 3 && product.category_id.is_some() {
+        let category_products = products::Entity::find()
+            .filter(products::Column::CategoryId.eq(product.category_id.unwrap()))
+            .filter(products::Column::Pid.ne(&product_pid))
+            .filter(products::Column::Status.eq("active"))
+            .limit(6)
+            .all(&ctx.db)
+            .await?;
+
+        // Merge and deduplicate
+        let mut all_products = related_products;
+        for cat_prod in category_products {
+            if !all_products.iter().any(|p| p.pid == cat_prod.pid) {
+                all_products.push(cat_prod);
+            }
+        }
+        all_products.truncate(6);
+
+        return format::json(all_products);
+    }
+
+    format::json(related_products)
 }
 
 pub fn routes() -> Routes {
@@ -764,4 +845,5 @@ pub fn routes() -> Routes {
         .add("/search/suggestions", get(search_suggestions))
         .add("/seller/{seller_id}", get(get_seller))
         .add("/categories/counts", get(get_category_counts))
+        .add("/{pid}/related", get(get_related_products))
 }
