@@ -14,3 +14,4 @@ pub mod online_status;
 pub mod regions;
 pub mod category_specs;
 pub mod price_intel;
+pub mod reviews;

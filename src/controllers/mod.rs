@@ -17,3 +17,5 @@ pub mod online_status;
 pub mod price_intel;
 pub mod regions;
 
+
+pub mod reviews;

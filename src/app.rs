@@ -56,6 +56,7 @@ impl Hooks for App {
 
     fn routes(_ctx: &AppContext) -> AppRoutes {
         AppRoutes::with_default_routes()
+            .add_route(controllers::reviews::routes())
             .add_route(controllers::price_intel::routes())
             .add_route(controllers::category_specs::routes())
             .add_route(controllers::regions::routes())
@@ -107,4 +108,3 @@ impl Hooks for App {
         Ok(())
     }
 }
-
